@@ -20028,6 +20028,60 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3938526737477639586
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2722638676946574506}
+  - component: {fileID: 5877721340226132233}
+  m_Layer: 0
+  m_Name: GunHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2722638676946574506
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3938526737477639586}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.49999905, y: -0.8, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7835191662419777251}
+  m_Father: {fileID: 5180149159172107346}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5877721340226132233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3938526737477639586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163178bfc05f2ec47b11fa229cf97a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 0.2
+  maxAmount: 0.4
+  smoothAmount: 3
+  rotationAmount: 10
+  maxRotationAmount: 11
+  smoothRotation: 8
+  rotationX: 0
+  rotationY: 0
+  rotationZ: 0
 --- !u!1 &5180149159172107341
 GameObject:
   m_ObjectHideFlags: 0
@@ -20059,7 +20113,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7835191662419777251}
+  - {fileID: 2722638676946574506}
   m_Father: {fileID: 5180149159194931656}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -20196,7 +20250,7 @@ CharacterController:
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5180149159194931657
@@ -20216,7 +20270,7 @@ MonoBehaviour:
   sprintSpeed: 7.5
   lookSpeed: {x: 0.0002, y: 0.0002}
   lookLimitVertical: {x: -90, y: 90}
-  groundedCheckBuffer: 0.08
+  groundedCheckBuffer: -0.47
   jumpHeight: 1.75
   gravity: -18
   bulletPrefab: {fileID: 8252702525301619098, guid: 0f134e3a4927e9e46af41becc92e73d3, type: 3}
@@ -20246,7 +20300,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 5180149159172107346}
+    m_TransformParent: {fileID: 2722638676946574506}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
       propertyPath: m_RootOrder
@@ -20254,15 +20308,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.49999905
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
       propertyPath: m_LocalRotation.w
@@ -20373,27 +20427,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8806224230743365429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7491704863568579673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 163178bfc05f2ec47b11fa229cf97a5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  amount: 2.67
-  maxAmount: 6.38
-  smoothAmount: 2.6
-  rotationAmount: 17.71
-  maxRotationAmount: 11
-  smoothRotation: -1.09
-  rotationX: 0
-  rotationY: 0
-  rotationZ: 0
 --- !u!4 &7557812196552470527 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 275904948540055287, guid: aba4ba78037939b41a4f6aef22a17a24, type: 3}
