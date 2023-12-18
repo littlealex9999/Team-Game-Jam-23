@@ -5,7 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Camera & Movement")]
-    public Camera cam;
+    public GameObject centralObj;
+    //public bool inverseCamera;
     public float cameraSmoothTime = 0.5f;
 
     public float moveSpeed = 5.0f;
@@ -19,20 +20,24 @@ public class Player : MonoBehaviour
 
     [Header("Shooting")]
     public Bullet bulletPrefab;
+    public Transform bulletSpawn;
     public float shootCooldown;
     float shootTimer;
+    public float reloadDuration = 4.0f;
+    float reloadTime;
 
-    public float bulletSpeed = 15.0f;
-    public Vector2 bulletSpread = new Vector2(1.0f, 1.0f);
+    [Space]
     public int bulletCount = 1;
+    public float bulletSpeed = 15.0f;
+    public float bulletDamage = 10.0f;
+    public Vector2 bulletSpread = new Vector2(1.0f, 1.0f);
 
+    [Space]
     public int maxAmmoClip = 15;
     public int maxAmmoHeld = 150;
     public int currentAmmoClip = 15;
     public int currentAmmoHeld = 150;
 
-    public float reloadDuration = 4.0f;
-    float reloadTime;
     bool reloading { get { return reloadTime > 0; } }
 
     void Start()
@@ -50,7 +55,7 @@ public class Player : MonoBehaviour
 
     void DoLook()
     {
-        cam.transform.position = Vector3.SmoothDamp(cam.transform.position, transform.position, ref cameraVelocity, cameraSmoothTime);
+        centralObj.transform.position = Vector3.SmoothDamp(centralObj.transform.position, transform.position, ref cameraVelocity, cameraSmoothTime);
         angleLook.x += Input.GetAxis("Mouse X") * lookSpeed.x;
         angleLook.y += -Input.GetAxis("Mouse Y") * lookSpeed.y;
 
@@ -60,9 +65,9 @@ public class Player : MonoBehaviour
             angleLook.y = lookLimitVertical.x;
         }
 
-        cam.transform.rotation = Quaternion.identity;
-        cam.transform.Rotate(cam.transform.right, angleLook.y, Space.World);
-        cam.transform.Rotate(Vector3.up, angleLook.x, Space.World);
+        centralObj.transform.rotation = Quaternion.identity;
+        centralObj.transform.Rotate(centralObj.transform.right, angleLook.y, Space.World);
+        centralObj.transform.Rotate(Vector3.up, angleLook.x, Space.World);
     }
 
     void DoMove()
@@ -78,18 +83,25 @@ public class Player : MonoBehaviour
             moveInput *= moveSpeed;
         }
 
+        //if (inverseCamera) moveInput = -moveInput;
+
         transform.position += Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0) * moveInput * Time.deltaTime;
     }
 
+    #region Shooting
     void DoShoot()
     {
         if (shootTimer <= 0) {
             if (Input.GetButton("Fire1")) {
                 if (currentAmmoClip > 0 && !reloading) {
+                    //Quaternion rot = transform.rotation;
+                    //if (inverseCamera) rot = Quaternion.Euler(-rot.eulerAngles);
+
                     for (int i = 0; i < bulletCount; i++) {
                         Quaternion spreadAngle = transform.rotation * Quaternion.Euler(Random.Range(-bulletSpread.x, bulletSpread.x), Random.Range(-bulletSpread.y, bulletSpread.y), 0);
-                        Bullet b = Instantiate(bulletPrefab, transform.position, spreadAngle);
+                        Bullet b = Instantiate(bulletPrefab, bulletSpawn.position, spreadAngle);
                         b.speed = bulletSpeed;
+                        b.damage = bulletDamage;
                     }
 
                     currentAmmoClip--;
@@ -124,4 +136,12 @@ public class Player : MonoBehaviour
 
         yield break;
     }
+    #endregion
+
+    #region Health
+    public void TakeDamage(float damage)
+    {
+
+    }
+    #endregion
 }
