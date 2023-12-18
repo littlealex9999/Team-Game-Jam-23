@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -25,8 +26,11 @@ public class Player : MonoBehaviour
     Vector2 angleLook;
     Vector3 velocity;
 
+    int indoorsTriggersEntered = 0;
+
     public bool sprinting { get; private set; }
-    public bool grounded { get { return Physics.Raycast(transform.position, -Vector3.up, characterController.height / 2 + groundedCheckBuffer); } }
+    public bool grounded { get; private set; }
+    public bool isIndoors { get { return indoorsTriggersEntered > 0; } }
 
 
     [Header("Shooting")]
@@ -58,7 +62,9 @@ public class Player : MonoBehaviour
     public float interactionRange = 5.0f;
     Interactable interactingWith;
     float interactionTimer;
+    public int score;
 
+    #region Unity
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -74,8 +80,25 @@ public class Player : MonoBehaviour
         DoLook();
         DoMove();
         DoShoot();
+        CheckInteractions();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered++;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered--;
+        }
+    }
+    #endregion
+
+    #region Movement
     void DoLook()
     {
         //cam.transform.position = Vector3.SmoothDamp(cam.transform.position, transform.position, ref cameraVelocity, cameraSmoothTime);
@@ -98,6 +121,14 @@ public class Player : MonoBehaviour
 
     void DoMove()
     {
+        grounded = false;
+        Collider[] nearGroundColliders = Physics.OverlapSphere(transform.position - transform.up * (characterController.height / 2 + groundedCheckBuffer), characterController.radius);
+        for (int i = 0; i < nearGroundColliders.Length; i++) {
+            if (nearGroundColliders[i] != characterController && !nearGroundColliders[i].isTrigger) {
+                grounded = true;
+            }
+        }
+
         sprinting = Input.GetButton("Sprint");
 
         Vector3 moveInput = new Vector3();
@@ -124,6 +155,7 @@ public class Player : MonoBehaviour
 
         characterController.Move(moveInput * Time.deltaTime);
     }
+    #endregion
 
     #region Shooting
     void DoShoot()
@@ -153,6 +185,12 @@ public class Player : MonoBehaviour
         } else {
             shootTimer -= Time.deltaTime;
         }
+
+        if (Input.GetButtonDown("Reload")) {
+            if (currentAmmoHeld > 0 && currentAmmoClip < maxAmmoClip) {
+                StartCoroutine(Reload(reloadDuration));
+            }
+        }
     }
 
     public void RestoreAmmo(int amount)
@@ -178,7 +216,7 @@ public class Player : MonoBehaviour
         int possibleRestore = currentAmmoHeld - ammoRestored;
         if (possibleRestore < 0) ammoRestored = currentAmmoHeld;
 
-        currentAmmoClip = ammoRestored;
+        currentAmmoClip = currentAmmoClip + ammoRestored;
         currentAmmoHeld -= ammoRestored;
 
         yield break;
@@ -211,11 +249,31 @@ public class Player : MonoBehaviour
     void CheckInteractions()
     {
         if (interactingWith != null) {
-
+            if (Input.GetButton("Interact")) {
+                if (interactionTimer > 0) {
+                    interactionTimer -= Time.deltaTime;
+                } else {
+                    interactingWith.Interact(this);
+                    if (interactingWith.CanInteract(this)) {
+                        interactionTimer = interactingWith.timeToInteract;
+                    } else {
+                        interactingWith = null;
+                    }
+                }
+            } else {
+                interactingWith = null;
+            }
         } else {
             // layermask 6 is the "Interactable" layer
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 6)) {
-
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 1 << 6)) {
+                if (Input.GetButtonDown("Interact")) {
+                    interactingWith = hit.transform.GetComponent<Interactable>();
+                    if (interactingWith != null && interactingWith.CanInteract(this)) {
+                        interactionTimer = interactingWith.timeToInteract;
+                    } else {
+                        interactingWith = null;
+                    }
+                }
             }
         }
     }

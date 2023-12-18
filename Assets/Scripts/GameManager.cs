@@ -9,6 +9,12 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public Player player;
+
+    [Header("Scoring")]
+    public int scoreOnKill = 20;
+    public int scoreOnBullet = 10;
+
+    [Space]
     public Image healthUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
@@ -36,5 +42,10 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
 
+    }
+
+    public void AddScore(int score)
+    {
+        player.score += score;
     }
 }
