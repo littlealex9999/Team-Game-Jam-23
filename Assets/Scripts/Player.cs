@@ -20,10 +20,10 @@ public class Player : MonoBehaviour
     public float jumpHeight = 3;
     public float gravity = -10;
 
-    private CharacterController characterController;
-    private Vector3 cameraVelocity;
-    private Vector2 angleLook;
-    private Vector3 velocity;
+    CharacterController characterController;
+    Vector3 cameraVelocity;
+    Vector2 angleLook;
+    Vector3 velocity;
 
     public bool sprinting { get; private set; }
     public bool grounded { get { return Physics.Raycast(transform.position, -Vector3.up, characterController.height / 2 + groundedCheckBuffer); } }
@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     float reloadTime;
 
     [Space]
+    public bool fullAuto = true;
     public int bulletCount = 1;
     public float bulletSpeed = 15.0f;
     public float bulletDamage = 10.0f;
@@ -51,12 +52,21 @@ public class Player : MonoBehaviour
 
     bool reloading { get { return reloadTime > 0; } }
 
+    [Header("Health & Interactions")]
+    public float maxHealth;
+    public float health;
+    public float interactionRange = 5.0f;
+    Interactable interactingWith;
+    float interactionTimer;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         characterController = GetComponent<CharacterController>();
+
+        health = maxHealth;
     }
 
     void Update()
@@ -119,7 +129,7 @@ public class Player : MonoBehaviour
     void DoShoot()
     {
         if (shootTimer <= 0) {
-            if (Input.GetButton("Fire1")) {
+            if (fullAuto ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) {
                 if (currentAmmoClip > 0 && !reloading) {
                     Quaternion rot = cam.transform.rotation;
                     //if (inverseCamera) rot = Quaternion.Euler(-rot.eulerAngles);
@@ -142,6 +152,16 @@ public class Player : MonoBehaviour
             }
         } else {
             shootTimer -= Time.deltaTime;
+        }
+    }
+
+    public void RestoreAmmo(int amount)
+    {
+        if (amount <= 0) return;
+
+        currentAmmoHeld += amount;
+        if (currentAmmoHeld > maxAmmoClip - currentAmmoClip + maxAmmoHeld) {
+            currentAmmoHeld = maxAmmoClip - currentAmmoClip + maxAmmoHeld;
         }
     }
 
@@ -168,7 +188,36 @@ public class Player : MonoBehaviour
     #region Health
     public void TakeDamage(float damage)
     {
+        if (damage <= 0) return;
 
+        health -= damage;
+        if (health <= 0) {
+            GameManager.instance.GameOver();
+        }
+    }
+
+    public void HealDamage(float amount)
+    {
+        if (amount <= 0) return;
+
+        health += amount;
+        if (health > maxHealth) {
+            health = maxHealth;
+        }
+    }
+    #endregion
+
+    #region Interactions
+    void CheckInteractions()
+    {
+        if (interactingWith != null) {
+
+        } else {
+            // layermask 6 is the "Interactable" layer
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 6)) {
+
+            }
+        }
     }
     #endregion
 }
