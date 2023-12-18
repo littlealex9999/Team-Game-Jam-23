@@ -11,6 +11,8 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.gameStopped) return;
+
         if (lifetime <= 0) Destroy(gameObject);
         lifetime -= Time.deltaTime;
 

@@ -59,6 +59,14 @@ public class Player : MonoBehaviour
     [Header("Health & Interactions")]
     public float maxHealth;
     public float health;
+    [Space]
+    public float maxStamina = 100.0f;
+    public float stamina = 100.0f;
+    public float staminaRegen = 20.0f;
+    public float staminaRegenCooldown = 2.0f;
+    public float sprintStaminaCost = 5.0f;
+    float staminaRegenTimer;
+    [Space]
     public float interactionRange = 5.0f;
     Interactable interactingWith;
     float interactionTimer;
@@ -73,14 +81,18 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
 
         health = maxHealth;
+        stamina = maxStamina;
     }
 
     void Update()
     {
+        if (GameManager.instance.gameStopped) return;
+
         DoLook();
         DoMove();
         DoShoot();
         CheckInteractions();
+        RegenStamina();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -129,13 +141,18 @@ public class Player : MonoBehaviour
             }
         }
 
-        sprinting = Input.GetButton("Sprint");
+        if (stamina < sprintStaminaCost * Time.deltaTime) {
+            sprinting = false;
+        } else {
+            sprinting = Input.GetButton("Sprint");
+        }
 
         Vector3 moveInput = new Vector3();
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.z = Input.GetAxis("Vertical");
         if (sprinting) {
             moveInput *= sprintSpeed;
+            UseStamina(sprintStaminaCost * Time.deltaTime);
         } else {
             moveInput *= moveSpeed;
         }
@@ -241,6 +258,21 @@ public class Player : MonoBehaviour
         health += amount;
         if (health > maxHealth) {
             health = maxHealth;
+        }
+    }
+
+    public void UseStamina(float amount)
+    {
+        stamina -= amount;
+        staminaRegenTimer = staminaRegenCooldown;
+    }
+
+    void RegenStamina() 
+    {
+        staminaRegenTimer -= Time.deltaTime;
+        if (staminaRegenTimer <= 0) {
+            stamina += staminaRegen * Time.deltaTime;
+            if (stamina > maxStamina) stamina = maxStamina;
         }
     }
     #endregion
