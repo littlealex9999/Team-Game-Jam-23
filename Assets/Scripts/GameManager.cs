@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public Player player;
+
+    [Space]
     public Image healthUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
