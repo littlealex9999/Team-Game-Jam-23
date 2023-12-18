@@ -86,6 +86,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.gameStopped) return;
+
         DoLook();
         DoMove();
         DoShoot();

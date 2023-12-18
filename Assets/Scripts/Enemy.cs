@@ -35,6 +35,8 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.instance.gameStopped) return;
+
         switch (actingState) {
             case ActingState.WALKING:
                 GetPathToTarget();
