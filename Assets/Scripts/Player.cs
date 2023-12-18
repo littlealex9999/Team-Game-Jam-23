@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     public float gravity = -10;
 
     CharacterController characterController;
+    Animator anim;
     Vector3 cameraVelocity;
     Vector2 angleLook;
     Vector3 velocity;
@@ -82,6 +83,7 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
 
         characterController = GetComponent<CharacterController>();
+        anim = GetComponentInChildren<Animator>();
 
         health = maxHealth;
         stamina = maxStamina;
@@ -156,8 +158,10 @@ public class Player : MonoBehaviour
         if (sprinting) {
             moveInput *= sprintSpeed;
             UseStamina(sprintStaminaCost * Time.deltaTime);
+            anim.SetBool("isSprinting", true);
         } else {
             moveInput *= moveSpeed;
+            anim.SetBool("isSprinting", false);
         }
 
         moveInput = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0) * moveInput;
@@ -192,7 +196,7 @@ public class Player : MonoBehaviour
                         b.speed = bulletSpeed;
                         b.damage = bulletDamage;
                     }
-
+                    anim.SetTrigger("hipfireShooting");
                     currentAmmoClip--;
 
                     shootTimer = shootCooldown;
@@ -226,11 +230,12 @@ public class Player : MonoBehaviour
     IEnumerator Reload(float duration)
     {
         if (reloadTime > 0) yield break;
-
+        anim.SetTrigger("Reload");
         reloadTime = duration;
         while ((reloadTime -= Time.deltaTime) > 0) {
             yield return new WaitForEndOfFrame();
         }
+
 
         int ammoRestored = maxAmmoClip - currentAmmoClip;
         int possibleRestore = currentAmmoHeld - ammoRestored;
