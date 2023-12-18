@@ -13,12 +13,20 @@ public class GameManager : MonoBehaviour
     [Header("Scoring")]
     public int scoreOnKill = 20;
     public int scoreOnBullet = 10;
+    public int scoreOnHeadshot = 50;
 
     [Header("UI")]
     public Image healthUI;
     public Image ammoUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
+    public Image hurtSplatter;
+    public AnimationCurve hurtSplatterCurve;
+
+    [Space]
+    public float gameOverFadeDuration = 3.0f;
+    public Image fadeToDeathScreen;
+    public GameObject gameOverScreen;
 
     [Header("Spawning")]
     public Enemy enemyPrefab;
@@ -77,6 +85,12 @@ public class GameManager : MonoBehaviour
             if (ammoUI) ammoUI.fillAmount = player.currentAmmoClip / player.maxAmmoClip;
             if (ammoText) ammoText.text = player.currentAmmoClip + " / " + player.maxAmmoClip;
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
+
+            if (hurtSplatter) {
+                Color c = hurtSplatter.color;
+                c.a = hurtSplatterCurve.Evaluate(1 - player.health / player.maxHealth);
+                hurtSplatter.color = c;
+            }
         }
     }
 
@@ -112,11 +126,18 @@ public class GameManager : MonoBehaviour
         }
 
         enemies.Clear();
+
+        gameOverScreen.SetActive(false);
     }
 
     public void GameOver()
     {
+#if UNITY_EDITOR
+        Debug.Log("Game Over");
+#endif
+
         gameOver = true;
+        StartCoroutine(GameOverFade(gameOverFadeDuration));
     }
 
     public void PauseGame(bool pauseState)
@@ -145,5 +166,25 @@ public class GameManager : MonoBehaviour
         spawnPos.z = enemySpawnFocus.position.z + spawnDir.y;
 
         Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+    }
+
+    IEnumerator GameOverFade(float duration)
+    {
+        fadeToDeathScreen.gameObject.SetActive(true);
+
+        float timer = 0;
+        while ((timer += Time.deltaTime) < duration) {
+            float completion = timer / duration;
+            Color c = fadeToDeathScreen.color;
+            c.a = completion;
+
+            fadeToDeathScreen.color = c;
+            yield return new WaitForEndOfFrame();
+        }
+
+        gameOverScreen.SetActive(true);
+        fadeToDeathScreen.gameObject.SetActive(false);
+
+        yield break;
     }
 }
