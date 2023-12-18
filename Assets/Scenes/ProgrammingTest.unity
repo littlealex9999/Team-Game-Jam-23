@@ -184,12 +184,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d1608033bd4f1a4497ba70713b101be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  centralObj: {fileID: 919132149113544408}
-  cameraSmoothTime: 0
+  cam: {fileID: 8929906455003254883}
   moveSpeed: 5
   sprintSpeed: 10
   lookSpeed: {x: 0.001, y: 0.001}
   lookLimitVertical: {x: -90, y: 90}
+  groundedCheckBuffer: 0.05
+  jumpHeight: 3
+  gravity: -10
   bulletPrefab: {fileID: 8252702525301619098, guid: 0f134e3a4927e9e46af41becc92e73d3, type: 3}
   bulletSpawn: {fileID: 497737072096812472}
   shootCooldown: 0.1
@@ -732,6 +734,7 @@ GameObject:
   m_Component:
   - component: {fileID: 543450653641245794}
   - component: {fileID: 701744878}
+  - component: {fileID: 919132149113544409}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -739,6 +742,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!143 &919132149113544409
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149113544408}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1108759428501639363
 GameObject:
   m_ObjectHideFlags: 0

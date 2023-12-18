@@ -12,7 +12,18 @@ public class Interactable : MonoBehaviour
 
     public RestorationType restorationType;
     public int cost;
+    public float amountToRestore;
     public float timeToInteract;
 
-
+    void Interact(Player player)
+    {
+        switch (restorationType) {
+            case RestorationType.HEALTH:
+                player.HealDamage(amountToRestore);
+                break;
+            case RestorationType.AMMO:
+                player.RestoreAmmo((int)amountToRestore);
+                break;
+        }
+    }
 }

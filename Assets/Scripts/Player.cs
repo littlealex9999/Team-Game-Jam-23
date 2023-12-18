@@ -20,10 +20,10 @@ public class Player : MonoBehaviour
     public float jumpHeight = 3;
     public float gravity = -10;
 
-    private CharacterController characterController;
-    private Vector3 cameraVelocity;
-    private Vector2 angleLook;
-    private Vector3 velocity;
+    CharacterController characterController;
+    Vector3 cameraVelocity;
+    Vector2 angleLook;
+    Vector3 velocity;
 
     public bool sprinting { get; private set; }
     public bool grounded { get { return Physics.Raycast(transform.position, -Vector3.up, characterController.height / 2 + groundedCheckBuffer); } }
@@ -51,12 +51,21 @@ public class Player : MonoBehaviour
 
     bool reloading { get { return reloadTime > 0; } }
 
+    [Header("Health & Interactions")]
+    public float maxHealth;
+    [HideInInspector] public float health;
+    public float interactionRange = 5.0f;
+    Interactable interactingWith;
+    float interactionTimer;
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         characterController = GetComponent<CharacterController>();
+
+        health = maxHealth;
     }
 
     void Update()
@@ -145,6 +154,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void RestoreAmmo(int amount)
+    {
+        if (amount <= 0) return;
+
+        currentAmmoHeld += amount;
+        if (currentAmmoHeld > maxAmmoClip - currentAmmoClip + maxAmmoHeld) {
+            currentAmmoHeld = maxAmmoClip - currentAmmoClip + maxAmmoHeld;
+        }
+    }
+
     IEnumerator Reload(float duration)
     {
         if (reloadTime > 0) yield break;
@@ -168,7 +187,36 @@ public class Player : MonoBehaviour
     #region Health
     public void TakeDamage(float damage)
     {
+        if (damage >= 0) return;
 
+        health -= damage;
+        if (health <= 0) {
+
+        }
+    }
+
+    public void HealDamage(float amount)
+    {
+        if (amount <= 0) return;
+
+        health += amount;
+        if (health > maxHealth) {
+            health = maxHealth;
+        }
+    }
+    #endregion
+
+    #region Interactions
+    void CheckInteractions()
+    {
+        if (interactingWith != null) {
+
+        } else {
+            // layermask 6 is the "Interactable" layer
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 6)) {
+
+            }
+        }
     }
     #endregion
 }
