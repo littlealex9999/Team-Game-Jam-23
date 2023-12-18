@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     int indoorsTriggersEntered = 0;
 
     public bool sprinting { get; private set; }
-    public bool grounded { get { return Physics.Raycast(transform.position, -Vector3.up, characterController.height / 2 + groundedCheckBuffer); } }
+    public bool grounded { get; private set; }
     public bool isIndoors { get { return indoorsTriggersEntered > 0; } }
 
 
@@ -121,6 +121,14 @@ public class Player : MonoBehaviour
 
     void DoMove()
     {
+        grounded = false;
+        Collider[] nearGroundColliders = Physics.OverlapSphere(transform.position - transform.up * (characterController.height / 2 + groundedCheckBuffer), characterController.radius);
+        for (int i = 0; i < nearGroundColliders.Length; i++) {
+            if (nearGroundColliders[i] != characterController && !nearGroundColliders[i].isTrigger) {
+                grounded = true;
+            }
+        }
+
         sprinting = Input.GetButton("Sprint");
 
         Vector3 moveInput = new Vector3();
