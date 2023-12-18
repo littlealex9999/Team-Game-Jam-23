@@ -72,6 +72,9 @@ public class Player : MonoBehaviour
     float interactionTimer;
     public int score;
 
+    [Header("Animations")]
+    public Animator gunAnimator;
+
     #region Unity
     void Start()
     {
