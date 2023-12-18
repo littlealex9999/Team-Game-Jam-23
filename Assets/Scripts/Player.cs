@@ -2,21 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
     [Header("Camera & Movement")]
-    public GameObject centralObj;
+    public GameObject cam;
     //public bool inverseCamera;
-    public float cameraSmoothTime = 0.5f;
+    //public float cameraSmoothTime = 0.5f;
 
     public float moveSpeed = 5.0f;
     public float sprintSpeed = 10.0f;
     public Vector2 lookSpeed = new Vector2(5.0f, 5.0f);
     public Vector2 lookLimitVertical = new Vector2(-90.0f, 90.0f);
 
+    [Space]
+    public float groundedCheckBuffer = 0.05f;
+    public float jumpHeight = 3;
+    public float gravity = -10;
+
+    private CharacterController characterController;
     private Vector3 cameraVelocity;
     private Vector2 angleLook;
+    private Vector3 velocity;
+
     public bool sprinting { get; private set; }
+    public bool grounded { get { return Physics.Raycast(transform.position, -Vector3.up, characterController.height / 2 + groundedCheckBuffer); } }
+
 
     [Header("Shooting")]
     public Bullet bulletPrefab;
@@ -44,6 +55,8 @@ public class Player : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        characterController = GetComponent<CharacterController>();
     }
 
     void Update()
@@ -55,7 +68,7 @@ public class Player : MonoBehaviour
 
     void DoLook()
     {
-        centralObj.transform.position = Vector3.SmoothDamp(centralObj.transform.position, transform.position, ref cameraVelocity, cameraSmoothTime);
+        //cam.transform.position = Vector3.SmoothDamp(cam.transform.position, transform.position, ref cameraVelocity, cameraSmoothTime);
         angleLook.x += Input.GetAxis("Mouse X") * lookSpeed.x;
         angleLook.y += -Input.GetAxis("Mouse Y") * lookSpeed.y;
 
@@ -65,9 +78,12 @@ public class Player : MonoBehaviour
             angleLook.y = lookLimitVertical.x;
         }
 
-        centralObj.transform.rotation = Quaternion.identity;
-        centralObj.transform.Rotate(centralObj.transform.right, angleLook.y, Space.World);
-        centralObj.transform.Rotate(Vector3.up, angleLook.x, Space.World);
+        transform.rotation = Quaternion.identity;
+        transform.Rotate(Vector3.up, angleLook.x, Space.World);
+
+        cam.transform.localRotation = Quaternion.identity;
+        cam.transform.Rotate(cam.transform.right, angleLook.y, Space.World);
+        //cam.transform.Rotate(Vector3.up, angleLook.x, Space.World);
     }
 
     void DoMove()
@@ -83,9 +99,20 @@ public class Player : MonoBehaviour
             moveInput *= moveSpeed;
         }
 
-        //if (inverseCamera) moveInput = -moveInput;
+        moveInput = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0) * moveInput;
 
-        transform.position += Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0) * moveInput * Time.deltaTime;
+        if (grounded) {
+            if (velocity.y < 0) velocity.y = 0;
+            if (Input.GetButtonDown("Jump")) {
+                velocity.y = Mathf.Sqrt(2 * -gravity * jumpHeight);
+            }
+        } else {
+            velocity.y += gravity * Time.deltaTime;
+        }
+
+        moveInput += velocity;
+
+        characterController.Move(moveInput * Time.deltaTime);
     }
 
     #region Shooting
@@ -94,11 +121,11 @@ public class Player : MonoBehaviour
         if (shootTimer <= 0) {
             if (Input.GetButton("Fire1")) {
                 if (currentAmmoClip > 0 && !reloading) {
-                    //Quaternion rot = transform.rotation;
+                    Quaternion rot = cam.transform.rotation;
                     //if (inverseCamera) rot = Quaternion.Euler(-rot.eulerAngles);
 
                     for (int i = 0; i < bulletCount; i++) {
-                        Quaternion spreadAngle = transform.rotation * Quaternion.Euler(Random.Range(-bulletSpread.x, bulletSpread.x), Random.Range(-bulletSpread.y, bulletSpread.y), 0);
+                        Quaternion spreadAngle = rot * Quaternion.Euler(Random.Range(-bulletSpread.x, bulletSpread.x), Random.Range(-bulletSpread.y, bulletSpread.y), 0);
                         Bullet b = Instantiate(bulletPrefab, bulletSpawn.position, spreadAngle);
                         b.speed = bulletSpeed;
                         b.damage = bulletDamage;
