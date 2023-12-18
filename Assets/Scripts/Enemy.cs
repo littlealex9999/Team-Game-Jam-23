@@ -4,17 +4,24 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float health;
+    public float health = 100;
+    public float damage = 10;
 
-
-    void Start()
+    void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeDamage(float damage)
     {
-        
+        health -= damage;
+        if (health <= 0) {
+            Destroy(gameObject);
+        }
+    }
+
+    public void DealDamage(Player player)
+    {
+
     }
 }
