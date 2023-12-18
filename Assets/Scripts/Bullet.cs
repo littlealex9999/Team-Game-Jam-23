@@ -18,8 +18,14 @@ public class Bullet : MonoBehaviour
 
         transform.position += transform.forward * speed * Time.deltaTime;
 
-        if (Physics.SphereCast(startPos, radius, transform.position - startPos, out RaycastHit hit)) {
+        Vector3 difference = transform.position - startPos;
 
+        if (Physics.SphereCast(startPos, radius, difference, out RaycastHit hit, difference.magnitude)) {
+            Enemy e = hit.transform.GetComponent<Enemy>();
+            if (e != null) {
+                e.TakeDamage(damage);
+                Destroy(gameObject);
+            }
         }
     }
 }
