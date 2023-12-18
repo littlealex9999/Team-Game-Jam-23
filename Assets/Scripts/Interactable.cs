@@ -19,6 +19,8 @@ public class Interactable : MonoBehaviour
 
     public void Interact(Player player)
     {
+        player.score -= cost;
+
         switch (restorationType) {
             case RestorationType.HEALTH:
                 player.HealDamage(amountToRestore);
@@ -34,6 +36,8 @@ public class Interactable : MonoBehaviour
 
     public bool CanInteract(Player player)
     {
+        if (player.score < cost) return false;
+
         switch (restorationType) {
             case RestorationType.HEALTH:
                 if (player.health < player.maxHealth) return true;

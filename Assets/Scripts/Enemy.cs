@@ -77,9 +77,18 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
+        GameManager.instance.AddScore(GameManager.instance.scoreOnBullet);
+
         if (health <= 0) {
-            Destroy(gameObject);
+            Death();
         }
+    }
+
+    void Death()
+    {
+        GameManager.instance.AddScore(GameManager.instance.scoreOnKill);
+
+        Destroy(gameObject);
     }
 
     public void DealDamage(Player player)

@@ -62,6 +62,7 @@ public class Player : MonoBehaviour
     public float interactionRange = 5.0f;
     Interactable interactingWith;
     float interactionTimer;
+    public int score;
 
     #region Unity
     void Start()
@@ -207,7 +208,7 @@ public class Player : MonoBehaviour
         int possibleRestore = currentAmmoHeld - ammoRestored;
         if (possibleRestore < 0) ammoRestored = currentAmmoHeld;
 
-        currentAmmoClip = ammoRestored;
+        currentAmmoClip = currentAmmoClip + ammoRestored;
         currentAmmoHeld -= ammoRestored;
 
         yield break;
