@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public Image healthUI;
+    public Image ammoUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
 
@@ -73,6 +74,7 @@ public class GameManager : MonoBehaviour
     {
         if (player != null) {
             if (healthUI) healthUI.fillAmount = player.health / player.maxHealth;
+            if (ammoUI) ammoUI.fillAmount = player.currentAmmoClip / player.maxAmmoClip;
             if (ammoText) ammoText.text = player.currentAmmoClip + " / " + player.maxAmmoClip;
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
         }
