@@ -24,8 +24,10 @@ public class Bullet : MonoBehaviour
             Enemy e = hit.transform.GetComponent<Enemy>();
             if (e != null) {
                 e.TakeDamage(damage);
-                Destroy(gameObject);
             }
+
+            // bullet destroys regardless of hitting an enemy or not
+            Destroy(gameObject);
         }
     }
 }

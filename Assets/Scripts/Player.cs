@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     float reloadTime;
 
     [Space]
+    public bool fullAuto = true;
     public int bulletCount = 1;
     public float bulletSpeed = 15.0f;
     public float bulletDamage = 10.0f;
@@ -53,7 +54,7 @@ public class Player : MonoBehaviour
 
     [Header("Health & Interactions")]
     public float maxHealth;
-    [HideInInspector] public float health;
+    public float health;
     public float interactionRange = 5.0f;
     Interactable interactingWith;
     float interactionTimer;
@@ -128,7 +129,7 @@ public class Player : MonoBehaviour
     void DoShoot()
     {
         if (shootTimer <= 0) {
-            if (Input.GetButton("Fire1")) {
+            if (fullAuto ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) {
                 if (currentAmmoClip > 0 && !reloading) {
                     Quaternion rot = cam.transform.rotation;
                     //if (inverseCamera) rot = Quaternion.Euler(-rot.eulerAngles);
@@ -187,11 +188,11 @@ public class Player : MonoBehaviour
     #region Health
     public void TakeDamage(float damage)
     {
-        if (damage >= 0) return;
+        if (damage <= 0) return;
 
         health -= damage;
         if (health <= 0) {
-
+            GameManager.instance.GameOver();
         }
     }
 

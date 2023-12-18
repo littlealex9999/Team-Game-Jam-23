@@ -6,17 +6,19 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+
     public Player player;
     public Image healthUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
 
-    void Start()
+    void Awake()
     {
-        
+        if (instance != null) Destroy(this);
+        else instance = this;
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateUI();
@@ -29,5 +31,10 @@ public class GameManager : MonoBehaviour
             if (ammoText) ammoText.text = player.currentAmmoClip + " / " + player.maxAmmoClip;
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
         }
+    }
+
+    public void GameOver()
+    {
+
     }
 }
