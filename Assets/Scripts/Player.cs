@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
     float shootTimer;
     public float reloadDuration = 4.0f;
     float reloadTime;
+    bool aimDownSights = false;
 
     [Space]
     public bool fullAuto = true;
@@ -48,6 +49,7 @@ public class Player : MonoBehaviour
     public float bulletSpeed = 15.0f;
     public float bulletDamage = 10.0f;
     public Vector2 bulletSpread = new Vector2(1.0f, 1.0f);
+    public Vector2 adsBulletSpread = new Vector2(0.0f, 0.0f);
 
     [Space]
     public int maxAmmoClip = 15;
@@ -72,9 +74,6 @@ public class Player : MonoBehaviour
     Interactable interactingWith;
     float interactionTimer;
     public int score;
-
-    [Header("Animations")]
-    public Animator gunAnimator;
 
     #region Unity
     void Start()
@@ -146,7 +145,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (stamina < sprintStaminaCost * Time.deltaTime) {
+        if (stamina < sprintStaminaCost * Time.deltaTime || aimDownSights) {
             sprinting = false;
         } else {
             sprinting = Input.GetButton("Sprint");
@@ -155,6 +154,7 @@ public class Player : MonoBehaviour
         Vector3 moveInput = new Vector3();
         moveInput.x = Input.GetAxis("Horizontal");
         moveInput.z = Input.GetAxis("Vertical");
+        moveInput = moveInput.normalized;
         if (sprinting) {
             moveInput *= sprintSpeed;
             UseStamina(sprintStaminaCost * Time.deltaTime);
@@ -184,19 +184,46 @@ public class Player : MonoBehaviour
     #region Shooting
     void DoShoot()
     {
+        if (Input.GetButton("Fire2")) {
+            if (!aimDownSights) {
+                aimDownSights = true;
+                anim.SetBool("aimDownSights", true);
+            }
+        } else {
+            if (aimDownSights) {
+                aimDownSights = false;
+                anim.SetBool("aimDownSights", false);
+            }
+        }
+
         if (shootTimer <= 0) {
             if (fullAuto ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) {
                 if (currentAmmoClip > 0 && !reloading) {
-                    Quaternion rot = cam.transform.rotation;
-                    //if (inverseCamera) rot = Quaternion.Euler(-rot.eulerAngles);
+                    Vector3 target;
+                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit)) {
+                        target = hit.point;
+                        if (Vector3.Dot(target - bulletSpawn.position, bulletSpawn.forward) < 0) {
+                            target = bulletSpawn.position + bulletSpawn.forward;
+                        }
+                    } else {
+                        target = bulletSpawn.position + bulletSpawn.forward;
+                    }
+
+                    //Quaternion rot = cam.transform.rotation;
+                    Quaternion rot = Quaternion.LookRotation(target - bulletSpawn.position, Vector3.up);
 
                     for (int i = 0; i < bulletCount; i++) {
-                        Quaternion spreadAngle = rot * Quaternion.Euler(Random.Range(-bulletSpread.x, bulletSpread.x), Random.Range(-bulletSpread.y, bulletSpread.y), 0);
+                        Quaternion spreadAngle;
+                        if (aimDownSights) {
+                            spreadAngle = rot * Quaternion.Euler(Random.Range(-adsBulletSpread.x, adsBulletSpread.x), Random.Range(-adsBulletSpread.y, adsBulletSpread.y), 0);
+                        } else {
+                            spreadAngle = rot * Quaternion.Euler(Random.Range(-bulletSpread.x, bulletSpread.x), Random.Range(-bulletSpread.y, bulletSpread.y), 0);
+                        }
                         Bullet b = Instantiate(bulletPrefab, bulletSpawn.position, spreadAngle);
                         b.speed = bulletSpeed;
                         b.damage = bulletDamage;
                     }
-                    anim.SetTrigger("hipfireShooting");
+                    anim.SetTrigger("shooting");
                     currentAmmoClip--;
 
                     shootTimer = shootCooldown;

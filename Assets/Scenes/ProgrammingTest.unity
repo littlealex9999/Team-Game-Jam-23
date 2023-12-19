@@ -3424,10 +3424,36 @@ MonoBehaviour:
   player: {fileID: 293506410}
   scoreOnKill: 20
   scoreOnBullet: 10
+  scoreOnHeadshot: 50
   healthUI: {fileID: 0}
   ammoUI: {fileID: 0}
   ammoText: {fileID: 332902631}
   ammoHeldText: {fileID: 262207809}
+  hurtSplatter: {fileID: 0}
+  hurtSplatterCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   gameOverFadeDuration: 3
   fadeToDeathScreen: {fileID: 497255929}
   gameOverScreen: {fileID: 920164088}
@@ -5024,7 +5050,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1101, y: 519}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &497255929
 MonoBehaviour:
@@ -14410,6 +14436,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d6b8b793bb32ac4b8a1a01c1401ea52, type: 3}
+--- !u!4 &1545213111 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7557812196552470527, guid: a989d3c281142d5499e9e2eb9df16ff7, type: 3}
+  m_PrefabInstance: {fileID: 5180149158906215587}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1547175965
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19558,6 +19589,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5180149159194931657, guid: a989d3c281142d5499e9e2eb9df16ff7, type: 3}
+      propertyPath: bulletSpawn
+      value: 
+      objectReference: {fileID: 1545213111}
     - target: {fileID: 5180149159194931658, guid: a989d3c281142d5499e9e2eb9df16ff7, type: 3}
       propertyPath: m_Name
       value: Player
