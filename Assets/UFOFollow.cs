@@ -5,11 +5,13 @@ public class UFOFollow : MonoBehaviour
 {
     public float NormalMoveSpeed = 2f;
     public float ChaseMoveSpeed = 1f;
-    public float squareSize = 5f;
+
+    public Transform moveBoundsMin;
+    public Transform moveBoundsMax;
 
     private Transform playerTransform;
     private bool isFollowingPlayer = false;
-    private bool isChasing = false; 
+    private bool isChasing = false;
 
     private void Start()
     {
@@ -41,9 +43,9 @@ public class UFOFollow : MonoBehaviour
                 isChasing = false; // Stop chasing, so set isChasing to false
 
                 Vector3 targetPosition = new Vector3(
-                    Random.Range(-squareSize / 2, squareSize / 2),
+                    Random.Range(moveBoundsMin.position.x, moveBoundsMax.position.x),
                     0f,
-                    Random.Range(-squareSize / 2, squareSize / 2)
+                    Random.Range(moveBoundsMin.position.z, moveBoundsMax.position.z)
                 );
 
                 while (Vector3.Distance(transform.position, targetPosition) > 0.1f)
@@ -66,7 +68,7 @@ public class UFOFollow : MonoBehaviour
     {
         while (isChasing) // Only increase speed when chasing
         {
-            yield return new WaitForSeconds(1.5f); 
+            yield return new WaitForSeconds(1.5f);
             ChaseMoveSpeed += 1f; // Increase ChaseMoveSpeed by 1
         }
     }
