@@ -34,6 +34,9 @@ public class Enemy : MonoBehaviour
     bool dead = false;
     NavMeshAgent agent;
 
+    int indoorsTriggersEntered = 0;
+    public bool isIndoors { get { return indoorsTriggersEntered > 0; } }
+
     enum ActingState
     {
         WALKING,
@@ -75,6 +78,20 @@ public class Enemy : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered++;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered--;
+        }
+    }
+
     void GetPathToTarget()
     {
         if (GameManager.instance.player != null) {
@@ -82,7 +99,7 @@ public class Enemy : MonoBehaviour
 
             if (agent.remainingDistance <= agent.stoppingDistance) {
                 StartCoroutine(Attack());
-            } else if (GameManager.instance.player.isIndoors) {
+            } else if (GameManager.instance.player.isIndoors && !isIndoors || !GameManager.instance.player.isIndoors && isIndoors) {
                 // layermask 7 is the "Boards" layer
                 Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, destroyBoardsDistance, 1 << 7);
 

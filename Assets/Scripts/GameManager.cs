@@ -20,23 +20,30 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI healthMaxText;
 
+    [Space]
     public Image ammoUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoMaxText;
     public TextMeshProUGUI ammoHeldText;
 
+    [Space]
+    public UFOFollow ufoFollow;
     public Image timerImage;
     public TextMeshProUGUI timerText;
 
+    [Space]
     public TextMeshProUGUI scoreText;
 
+    [Space]
     public Image interactImage;
     public TextMeshProUGUI interactText;
 
+    [Space]
     public Image hitmarkerImage;
     public float hitmarkerStayTime = 0.1f;
     Coroutine hitmarkerCoroutine;
 
+    [Space]
     public Image hurtSplatter;
     public AnimationCurve hurtSplatterCurve;
 
@@ -120,8 +127,8 @@ public class GameManager : MonoBehaviour
             if (ammoText) ammoText.text = player.currentAmmoClip.ToString();
             if (ammoMaxText) ammoMaxText.text = player.maxAmmoClip.ToString();
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
-            if (timerImage) timerImage.fillAmount = enemySpawnTimer / enemySpawnTimerMax;
-            if (timerText) timerText.text = enemySpawnTimer.ToString("0");
+            if (timerImage && ufoFollow) timerImage.fillAmount = ufoFollow.suckTime / ufoFollow.timeToSuckPlayer;
+            if (timerText) timerText.text = elapsedGameTime.ToString("0");
             if (scoreText) scoreText.text = player.score.ToString();
 
             if (hurtSplatter) {
