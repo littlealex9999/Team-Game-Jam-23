@@ -18,8 +18,10 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public Image healthUI;
     public TextMeshProUGUI healthText;
+    public TextMeshProUGUI healthMaxText;
     public Image ammoUI;
     public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI ammoMaxText;
     public TextMeshProUGUI ammoHeldText;
     public Image timerImage;
     public TextMeshProUGUI timerText;
@@ -99,8 +101,10 @@ public class GameManager : MonoBehaviour
         if (player != null) {
             if (healthUI) healthUI.fillAmount = player.health / player.maxHealth;
             if (healthText) healthText.text = player.health.ToString("0");
+            if (healthMaxText) healthMaxText.text = player.maxHealth.ToString("0");
             if (ammoUI) ammoUI.fillAmount = (float)player.currentAmmoClip / (float)player.maxAmmoClip;
             if (ammoText) ammoText.text = player.currentAmmoClip.ToString();
+            if (ammoMaxText) ammoMaxText.text = player.maxAmmoClip.ToString();
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
 
             if (hurtSplatter) {
