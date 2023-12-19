@@ -140,6 +140,7 @@ public class Player : MonoBehaviour
         grounded = false;
         Collider[] nearGroundColliders = Physics.OverlapSphere(transform.position - transform.up * (characterController.height / 2 + groundedCheckBuffer), characterController.radius);
         for (int i = 0; i < nearGroundColliders.Length; i++) {
+            if (nearGroundColliders[i].gameObject.layer == LayerMask.NameToLayer("Gun")) continue;
             if (nearGroundColliders[i] != characterController && !nearGroundColliders[i].isTrigger) {
                 grounded = true;
             }
