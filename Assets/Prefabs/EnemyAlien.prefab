@@ -49,6 +49,7 @@ MonoBehaviour:
   health: 100
   damage: 10
   destroyBoardsDistance: 5
+  destroyBoardsTime: 5
   animator: {fileID: 9208643149841171193}
   headPopEnable:
   - {fileID: 2407191024926025603}
@@ -61,6 +62,10 @@ MonoBehaviour:
   - 0.2
   - 1
   - 0.8
+  hurtTimes:
+  - 0.733
+  - 1.433
+  destroyTime: 10
 --- !u!195 &8062577997906953117
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -26,6 +26,7 @@ public class Bullet : MonoBehaviour
             BodyPart part = hit.transform.GetComponent<BodyPart>();
             if (part != null) {
                 part.enemy.TakeDamage(damage, part.part);
+                GameManager.instance.FlashHitmarker();
             }
 
             // bullet destroys regardless of hitting an enemy or not

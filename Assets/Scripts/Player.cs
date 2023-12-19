@@ -162,22 +162,28 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (stamina < sprintStaminaCost * Time.deltaTime || aimDownSights) {
-            sprinting = false;
-        } else {
-            sprinting = Input.GetButton("Sprint");
-        }
-
         Vector3 moveInput = new Vector3();
-        moveInput.x = Input.GetAxis("Horizontal");
-        moveInput.z = Input.GetAxis("Vertical");
-        moveInput = moveInput.normalized;
-        if (sprinting) {
-            moveInput *= sprintSpeed;
-            UseStamina(sprintStaminaCost * Time.deltaTime);
-            anim.SetBool("isSprinting", true);
+
+        if (interactingWith == null) {
+            if (stamina < sprintStaminaCost * Time.deltaTime || aimDownSights) {
+                sprinting = false;
+            } else {
+                sprinting = Input.GetButton("Sprint");
+            }
+
+            moveInput.x = Input.GetAxis("Horizontal");
+            moveInput.z = Input.GetAxis("Vertical");
+            moveInput = moveInput.normalized;
+            if (sprinting) {
+                moveInput *= sprintSpeed;
+                UseStamina(sprintStaminaCost * Time.deltaTime);
+                anim.SetBool("isSprinting", true);
+            } else {
+                moveInput *= moveSpeed;
+                anim.SetBool("isSprinting", false);
+            }
         } else {
-            moveInput *= moveSpeed;
+            sprinting = false;
             anim.SetBool("isSprinting", false);
         }
 
@@ -185,7 +191,7 @@ public class Player : MonoBehaviour
 
         if (grounded) {
             if (velocity.y < 0) velocity.y = 0;
-            if (Input.GetButtonDown("Jump")) {
+            if (Input.GetButtonDown("Jump") && interactingWith == null) {
                 velocity.y = Mathf.Sqrt(2 * -gravity * jumpHeight);
             }
         } else {
@@ -344,20 +350,29 @@ public class Player : MonoBehaviour
                         interactingWith = null;
                     }
                 }
+
+                if (interactingWith != null) {
+                    GameManager.instance.UpdateInteractUI(interactingWith, interactingWith.timeToInteract, interactionTimer);
+                }
             } else {
                 interactingWith = null;
             }
         } else {
             // layermask 6 is the "Interactable" layer, layermask 7 is the "Boards" layer
             if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 1 << 6 | 1 << 7, QueryTriggerInteraction.Collide)) {
+                Interactable i = hit.transform.GetComponent<Interactable>();
+                GameManager.instance.UpdateInteractUI(i);
+
                 if (Input.GetButtonDown("Interact")) {
-                    interactingWith = hit.transform.GetComponent<Interactable>();
+                    interactingWith = i;
                     if (interactingWith != null && interactingWith.CanInteract(this)) {
                         interactionTimer = interactingWith.timeToInteract;
                     } else {
                         interactingWith = null;
                     }
                 }
+            } else {
+                GameManager.instance.UpdateInteractUI(null);
             }
         }
     }

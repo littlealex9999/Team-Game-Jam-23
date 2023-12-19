@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,8 +10,9 @@ public class Enemy : MonoBehaviour
     public float health = 100;
     public float damage = 10;
 
-    [Space]
+    [Header("Board Destruction")]
     public float destroyBoardsDistance = 5.0f;
+    public float destroyBoardsTime = 5.0f;
 
     [Header("Kill Effects")]
     public Animator animator;
@@ -20,6 +22,7 @@ public class Enemy : MonoBehaviour
     [Header("Animation Jank")]
     public List<float> meleeTimes;
     public List<float> damageTimes;
+    public List<float> hurtTimes;
     public float destroyTime = 10.0f;
 
     bool dead = false;
@@ -30,6 +33,7 @@ public class Enemy : MonoBehaviour
         WALKING,
         DESTROYINGWALL,
         ATTACKING,
+        HURT,
     }
 
     ActingState actingState;
@@ -80,7 +84,7 @@ public class Enemy : MonoBehaviour
                     Board b = nearbyColliders[i].GetComponent<Board>();
                     if (b != null) {
                         if (b.remainingBoards > 0) {
-                            StartCoroutine(DestroyBoard(b));
+                            StartCoroutine(DestroyBoard(b, destroyBoardsTime));
                         }
                     }
                 }
@@ -112,24 +116,22 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage, BodyPart.PartType part)
     {
-        //TODO: Hit anim
-
         switch (part) {
             case BodyPart.PartType.HEAD:
                 health -= health * 2;
                 GameManager.instance.AddScore(GameManager.instance.scoreOnHeadshot);
-                Debug.Log("Headshot");
                 break;
             case BodyPart.PartType.BODY:
             default:
                 health -= damage;
                 GameManager.instance.AddScore(GameManager.instance.scoreOnBullet);
-                Debug.Log("Body shot");
                 break;
         }
 
         if (health <= 0) {
             Death(part);
+        } else {
+            StartCoroutine(GetHurt());
         }
     }
 
@@ -137,7 +139,6 @@ public class Enemy : MonoBehaviour
     {
         GameManager.instance.AddScore(GameManager.instance.scoreOnKill);
 
-        //Destroy(gameObject);
         switch (part) {
             case BodyPart.PartType.HEAD:
                 for (int i = 0; i < headPopEnable.Count; i++) {
@@ -147,6 +148,11 @@ public class Enemy : MonoBehaviour
             case BodyPart.PartType.BODY:
             default:
                 break;
+        }
+
+        Collider[] allColliders = GetComponentsInChildren<Collider>();
+        for (int i = 0; i < allColliders.Length; i++) {
+            allColliders[i].enabled = false;
         }
 
         SetAnimationState("Death", 3);
@@ -170,8 +176,6 @@ public class Enemy : MonoBehaviour
         if (!agent.isStopped) agent.isStopped = true;
 
         int meleeIndex = SetAnimationState("Melee", 3, false) - 1;
-
-        // do something animation based
 
         bool hit = false;
         float timer = meleeTimes[meleeIndex];
@@ -199,7 +203,7 @@ public class Enemy : MonoBehaviour
         yield break;
     }
 
-    IEnumerator DestroyBoard(Board board)
+    IEnumerator DestroyBoard(Board board, float duration)
     {
         if (actingState != ActingState.WALKING) yield break;
 
@@ -208,14 +212,38 @@ public class Enemy : MonoBehaviour
 
         SetAnimationState("Telekinesis", 1, false);
 
-        // do something animation based
+        float timer = 0;
+        while ((timer += Time.deltaTime) < duration) {
+            
 
-        float timer = 5.0f;
-        while ((timer -= Time.deltaTime) > 0) {
             yield return new WaitForEndOfFrame();
         }
 
         board.RemoveBoard();
+
+        agent.isStopped = false;
+        actingState = ActingState.WALKING;
+
+        SetAnimationState("Walk", 3, false);
+
+        yield break;
+    }
+
+    IEnumerator GetHurt()
+    {
+        if (actingState != ActingState.WALKING) yield break;
+
+        actingState = ActingState.HURT;
+        if (!agent.isStopped) agent.isStopped = true;
+
+        int hurtIndex = SetAnimationState("Hit", 2, false) - 1;
+
+        float timer = hurtTimes[hurtIndex];
+        while ((timer -= Time.deltaTime) > 0) {
+            if (GameManager.instance.gameStopped) yield return new WaitForEndOfFrame();
+
+            yield return new WaitForEndOfFrame();
+        }
 
         agent.isStopped = false;
         actingState = ActingState.WALKING;
