@@ -75,17 +75,20 @@ public class Player : MonoBehaviour
     float interactionTimer;
     public int score;
 
+    Vector3 spawnPos;
+    Quaternion spawnRot;
+
     #region Unity
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
         characterController = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
 
         health = maxHealth;
         stamina = maxStamina;
+
+        spawnPos = transform.position;
+        spawnRot = transform.rotation;
     }
 
     void Update()
@@ -111,6 +114,17 @@ public class Player : MonoBehaviour
         if (other.tag == "Indoors") {
             indoorsTriggersEntered--;
         }
+    }
+
+    public void Restart()
+    {
+        health = maxHealth;
+        stamina = maxStamina;
+
+        characterController.enabled = false;
+        transform.position = spawnPos;
+        transform.rotation = spawnRot;
+        characterController.enabled = true;
     }
     #endregion
 
