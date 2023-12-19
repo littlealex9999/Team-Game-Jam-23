@@ -302,7 +302,6 @@ GameObject:
   - component: {fileID: 376642196}
   - component: {fileID: 376642199}
   - component: {fileID: 376642198}
-  - component: {fileID: 376642197}
   m_Layer: 0
   m_Name: r (47)
   m_TagString: Untagged
@@ -375,19 +374,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &376642197
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 376642195}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &583516648
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,7 +579,6 @@ GameObject:
   - component: {fileID: 781023378}
   - component: {fileID: 781023381}
   - component: {fileID: 781023380}
-  - component: {fileID: 781023379}
   m_Layer: 0
   m_Name: r (45)
   m_TagString: Untagged
@@ -666,19 +651,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &781023379
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 781023377}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &985120996
 GameObject:
   m_ObjectHideFlags: 0
@@ -1369,7 +1341,6 @@ GameObject:
   - component: {fileID: 1437601349}
   - component: {fileID: 1437601352}
   - component: {fileID: 1437601351}
-  - component: {fileID: 1437601350}
   m_Layer: 0
   m_Name: r (46)
   m_TagString: Untagged
@@ -1442,19 +1413,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1437601350
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1437601348}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1622844270
 GameObject:
   m_ObjectHideFlags: 0
