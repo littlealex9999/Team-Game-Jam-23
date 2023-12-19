@@ -17,6 +17,7 @@ public class UFOFollow : MonoBehaviour
     private bool isMovingPlayerUp = false;
     private Coroutine movePlayerUpCoroutine;
     private Coroutine stayCoroutine;
+    private Coroutine randomPosCoroutine;
 
     private void Start()
     {
@@ -71,7 +72,10 @@ public class UFOFollow : MonoBehaviour
             else
             {
                 ResetChaseState();
-                MoveToRandomPosition();
+
+                if (randomPosCoroutine == null) {
+                    randomPosCoroutine = StartCoroutine(MoveToRandomPosition());
+                }
             }
 
             yield return null;
@@ -98,6 +102,8 @@ public class UFOFollow : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, NormalMoveSpeed * Time.deltaTime);
             yield return null;
         }
+
+        randomPosCoroutine = null;
     }
 
     private IEnumerator IncreaseChaseSpeedOverTime()
