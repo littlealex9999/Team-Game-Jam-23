@@ -3,17 +3,18 @@ using UnityEngine;
 
 public class UFOFollow : MonoBehaviour
 {
-    public float moveSpeed = 2f;
+    public float NormalMoveSpeed = 2f;
+    public float ChaseMoveSpeed = 1f;
     public float squareSize = 5f;
 
     private Transform playerTransform;
     private bool isFollowingPlayer = false;
+    private bool isChasing = false; 
 
     private void Start()
     {
-        playerTransform = GameManager.instance.player.transform; // Assuming GameManager has a reference to the player
+        playerTransform = GameManager.instance.player.transform;
 
-        // Start the movement coroutine
         StartCoroutine(RandomMove());
     }
 
@@ -25,35 +26,48 @@ public class UFOFollow : MonoBehaviour
             {
                 if (!isFollowingPlayer)
                 {
-                    // If the player is not indoors and we are not following them, start following
                     isFollowingPlayer = true;
+                    isChasing = true; // Start chasing, so set isChasing to true
+                    StartCoroutine(IncreaseChaseSpeedOverTime());
                 }
 
-                // Move towards the player's position
                 Vector3 targetPosition = playerTransform.position;
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, ChaseMoveSpeed * Time.deltaTime);
             }
             else
             {
-                // If the player is indoors, stop following the player
+                ChaseMoveSpeed = 1;
                 isFollowingPlayer = false;
+                isChasing = false; // Stop chasing, so set isChasing to false
 
-                // Generate a random target position within the square area
                 Vector3 targetPosition = new Vector3(
                     Random.Range(-squareSize / 2, squareSize / 2),
                     0f,
                     Random.Range(-squareSize / 2, squareSize / 2)
                 );
 
-                // Smoothly move the object towards the random position
                 while (Vector3.Distance(transform.position, targetPosition) > 0.1f)
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+                    if (!GameManager.instance.player.isIndoors)
+                    {
+                        break;
+                    }
+
+                    transform.position = Vector3.MoveTowards(transform.position, targetPosition, NormalMoveSpeed * Time.deltaTime);
                     yield return null;
                 }
             }
 
             yield return null;
+        }
+    }
+
+    private IEnumerator IncreaseChaseSpeedOverTime()
+    {
+        while (isChasing) // Only increase speed when chasing
+        {
+            yield return new WaitForSeconds(1.5f); 
+            ChaseMoveSpeed += 1f; // Increase ChaseMoveSpeed by 1
         }
     }
 }
