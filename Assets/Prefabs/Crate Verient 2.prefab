@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5865342864737078767}
   - component: {fileID: 228801901555172657}
+  - component: {fileID: 7714407964827914993}
   m_Layer: 0
   m_Name: Crate Verient 2
   m_TagString: Untagged
@@ -46,6 +47,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.99196047, z: 1.7686834}
   m_Center: {x: 0, y: -0.004019767, z: -0.0017106235}
+--- !u!114 &7714407964827914993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5782419020645116528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ec5dd1187c72b4096bf1b3f48bf1b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHeight: 5
+  timeToRaise: 5
 --- !u!1001 &4236379318219764322
 PrefabInstance:
   m_ObjectHideFlags: 0

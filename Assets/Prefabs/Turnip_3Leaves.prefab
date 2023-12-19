@@ -69,7 +69,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 65159c040bac77a4bbc8c13fb84c6a42, type: 2}
     - target: {fileID: 919132149155446097, guid: 9584d61f78412a4428b8bbcfbbe4295d, type: 3}
       propertyPath: m_Name
-      value: Turnip_Pieces
+      value: Turnip_3Leaves
       objectReference: {fileID: 0}
     - target: {fileID: 1765880673562227218, guid: 9584d61f78412a4428b8bbcfbbe4295d, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -85,3 +85,35 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 7f171671b2bd4aa4e864eabdb3627bbf, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9584d61f78412a4428b8bbcfbbe4295d, type: 3}
+--- !u!1 &8889999990101801916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9584d61f78412a4428b8bbcfbbe4295d, type: 3}
+  m_PrefabInstance: {fileID: 8619597432033068781}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &600375965743377077
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8889999990101801916}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.16014767, y: 0.13438876, z: 0.09870911}
+  m_Center: {x: -0.01423502, y: 0.08660071, z: 0.03151703}
+--- !u!114 &6395059359061744798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8889999990101801916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ec5dd1187c72b4096bf1b3f48bf1b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHeight: 0.5
+  timeToRaise: 2
