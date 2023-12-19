@@ -19,13 +19,24 @@ public class GameManager : MonoBehaviour
     public Image healthUI;
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI healthMaxText;
+
     public Image ammoUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoMaxText;
     public TextMeshProUGUI ammoHeldText;
+
     public Image timerImage;
     public TextMeshProUGUI timerText;
+
     public TextMeshProUGUI scoreText;
+
+    public Image interactImage;
+    public TextMeshProUGUI interactText;
+
+    public Image hitmarkerImage;
+    public float hitmarkerStayTime = 0.1f;
+    Coroutine hitmarkerCoroutine;
+
     public Image hurtSplatter;
     public AnimationCurve hurtSplatterCurve;
 
@@ -56,6 +67,7 @@ public class GameManager : MonoBehaviour
     float enemySpawnCountPerMinuteBase;
     float enemySpawnCountRangePerMinuteBase;
     float enemySpawnTimer;
+    float enemySpawnTimerMax;
 
     List<Enemy> enemies = new List<Enemy>();
 
@@ -82,7 +94,9 @@ public class GameManager : MonoBehaviour
         enemySpawnCountPerMinuteBase = enemySpawnCountPerMinute;
         enemySpawnCountRangePerMinuteBase = enemySpawnCountRangePerMinute;
         enemySpawnTimer = enemySpawnIntervalMax;
+        enemySpawnTimerMax = enemySpawnTimer;
 
+        gameOver = true;
         ChangeMenuState(MenuState.MAIN);
     }
 
@@ -106,6 +120,9 @@ public class GameManager : MonoBehaviour
             if (ammoText) ammoText.text = player.currentAmmoClip.ToString();
             if (ammoMaxText) ammoMaxText.text = player.maxAmmoClip.ToString();
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
+            if (timerImage) timerImage.fillAmount = enemySpawnTimer / enemySpawnTimerMax;
+            if (timerText) timerText.text = enemySpawnTimer.ToString("0");
+            if (scoreText) scoreText.text = player.score.ToString();
 
             if (hurtSplatter) {
                 Color c = hurtSplatter.color;
@@ -113,6 +130,45 @@ public class GameManager : MonoBehaviour
                 hurtSplatter.color = c;
             }
         }
+    }
+
+    public void UpdateInteractUI(Interactable interactable)
+    {
+        if (interactable == null || !interactable.CanInteract(player)) {
+            interactText.text = "";
+            interactImage.fillAmount = 0;
+            return;
+        }
+
+        switch (interactable.restorationType) {
+            case Interactable.RestorationType.HEALTH:
+                interactText.text = "Hold \"E\" to gain " + interactable.amountToRestore + " health for " + interactable.cost + " points";
+                break;
+            case Interactable.RestorationType.AMMO:
+                interactText.text = "Hold \"E\" to gain " + interactable.amountToRestore + " ammo for " + interactable.cost + " points";
+                break;
+            case Interactable.RestorationType.BOARD:
+                interactText.text = "Hold \"E\" to rebuild a board for " + interactable.cost + " points";
+                break;
+        }
+
+        interactImage.fillAmount = 0;
+    }
+
+    public void UpdateInteractUI(Interactable interactable, float duration, float currentTime)
+    {
+        UpdateInteractUI(interactable);
+
+        interactImage.fillAmount = currentTime / duration;
+    }
+
+    public void FlashHitmarker()
+    {
+        if (hitmarkerCoroutine != null) {
+            StopCoroutine(hitmarkerCoroutine);
+        }
+
+        hitmarkerCoroutine = StartCoroutine(HitmarkerFlash(hitmarkerStayTime));
     }
 
     void UpdateEnemies()
@@ -128,6 +184,7 @@ public class GameManager : MonoBehaviour
             }
 
             enemySpawnTimer = Mathf.Lerp(enemySpawnIntervalMax, enemySpawnIntervalMin, enemySpawnIntervalCurve.Evaluate(Mathf.Clamp(elapsedGameTime / enemySpawnIntervalTimeToMax, 0, 1)));
+            enemySpawnTimerMax = enemySpawnTimer;
         }
     }
 
@@ -242,6 +299,26 @@ public class GameManager : MonoBehaviour
         }
 
         ChangeMenuState(MenuState.DEATH);
+
+        yield break;
+    }
+
+    IEnumerator HitmarkerFlash(float duration)
+    {
+        Color c = hitmarkerImage.color;
+        c.a = 1;
+        hitmarkerImage.color = c;
+
+        float timer = duration;
+        while ((timer -= Time.deltaTime) > 0) {
+            c.a = timer / duration;
+            hitmarkerImage.color = c;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        c.a = 0;
+        hitmarkerImage.color = c;
 
         yield break;
     }
