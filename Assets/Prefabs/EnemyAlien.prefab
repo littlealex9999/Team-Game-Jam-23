@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 7525161508584382802}
   - component: {fileID: 8062577997906953090}
   - component: {fileID: 8062577997906953117}
+  - component: {fileID: -7816411287617659562}
   m_Layer: 0
   m_Name: EnemyAlien
   m_TagString: Untagged
@@ -298,3 +299,23 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &-7816411287617659562
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7144237507309026280}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: c6278b73ea8857e438ee1af5c11afa78, type: 3}
+  m_Controller: {fileID: 9100000, guid: a3f713aecc7cf9048b8a719203fe4398, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

@@ -20079,9 +20079,9 @@ MonoBehaviour:
   rotationAmount: 10
   maxRotationAmount: 11
   smoothRotation: 8
-  rotationX: 0
-  rotationY: 0
-  rotationZ: 0
+  rotationX: 1
+  rotationY: 1
+  rotationZ: 1
 --- !u!1 &5180149159172107341
 GameObject:
   m_ObjectHideFlags: 0
@@ -20266,33 +20266,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 5180149159172107341}
-  moveSpeed: 5.5
-  sprintSpeed: 7.5
+  moveSpeed: 3.5
+  sprintSpeed: 5.5
   lookSpeed: {x: 0.0002, y: 0.0002}
   lookLimitVertical: {x: -90, y: 90}
   groundedCheckBuffer: -0.47
-  jumpHeight: 1.75
-  gravity: -18
+  jumpHeight: 1.25
+  gravity: -25
   bulletPrefab: {fileID: 8252702525301619098, guid: 0f134e3a4927e9e46af41becc92e73d3, type: 3}
   bulletSpawn: {fileID: 5180149159172107346}
   shootCooldown: 0.6
-  reloadDuration: 1
+  reloadDuration: 2
   fullAuto: 1
   bulletCount: 1
-  bulletSpeed: 225
+  bulletSpeed: 250
   bulletDamage: 100
-  bulletSpread: {x: 0.1, y: 0.1}
+  bulletSpread: {x: 5, y: 5}
+  adsBulletSpread: {x: 0.01, y: 0.01}
   maxAmmoClip: 4
-  maxAmmoHeld: 56
+  maxAmmoHeld: 36
   currentAmmoClip: 4
-  currentAmmoHeld: 28
+  currentAmmoHeld: 36
   maxHealth: 100
   health: 0
-  maxStamina: 100
-  stamina: 100
-  staminaRegen: 20
-  staminaRegenCooldown: 2
-  sprintStaminaCost: 5
+  maxStamina: 20
+  stamina: 20
+  staminaRegen: 5
+  staminaRegenCooldown: 1.5
+  sprintStaminaCost: 3
   interactionRange: 5
   score: 0
 --- !u!1001 &7725511953075892488
