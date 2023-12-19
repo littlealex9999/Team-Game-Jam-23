@@ -5,31 +5,63 @@ public class UFOFollow : MonoBehaviour
 {
     public float NormalMoveSpeed = 2f;
     public float ChaseMoveSpeed = 1f;
-
+    public float VerticalMoveSpeed = 0.5f;
     public Transform moveBoundsMin;
     public Transform moveBoundsMax;
 
     private Transform playerTransform;
+    private CharacterController playerController;
+    private Player playerScript;
     private bool isFollowingPlayer = false;
     private bool isChasing = false;
+    private bool isMovingPlayerUp = false;
+    private Coroutine movePlayerUpCoroutine;
+    private Coroutine stayCoroutine;
 
     private void Start()
     {
         playerTransform = GameManager.instance.player.transform;
-
+        playerController = GameManager.instance.player.GetComponent<CharacterController>();
+        playerScript = GameManager.instance.player.GetComponent<Player>();
         StartCoroutine(RandomMove());
+    }
+
+    private void Update()
+    {
+        if (playerTransform.position.y >= 15 && isMovingPlayerUp)
+        {
+            isMovingPlayerUp = false;
+
+            if (movePlayerUpCoroutine != null)
+            {
+                StopCoroutine(movePlayerUpCoroutine);
+            }
+
+            if (playerScript != null)
+            {
+                playerScript.enabled = true;
+                GameManager.instance.player.TakeDamage(200);
+            }
+
+            GameManager.instance.player.gravity = -18;
+            ResetChaseState();
+        }
     }
 
     private IEnumerator RandomMove()
     {
         while (true)
         {
-            if (!GameManager.instance.player.isIndoors)
+            if (isMovingPlayerUp)
+            {
+                yield return null;
+            }
+            else if (!GameManager.instance.player.isIndoors)
             {
                 if (!isFollowingPlayer)
                 {
                     isFollowingPlayer = true;
-                    isChasing = true; // Start chasing, so set isChasing to true
+                    isChasing = true;
                     StartCoroutine(IncreaseChaseSpeedOverTime());
                 }
 
@@ -38,38 +70,92 @@ public class UFOFollow : MonoBehaviour
             }
             else
             {
-                ChaseMoveSpeed = 1;
-                isFollowingPlayer = false;
-                isChasing = false; // Stop chasing, so set isChasing to false
-
-                Vector3 targetPosition = new Vector3(
-                    Random.Range(moveBoundsMin.position.x, moveBoundsMax.position.x),
-                    0f,
-                    Random.Range(moveBoundsMin.position.z, moveBoundsMax.position.z)
-                );
-
-                while (Vector3.Distance(transform.position, targetPosition) > 0.1f)
-                {
-                    if (!GameManager.instance.player.isIndoors)
-                    {
-                        break;
-                    }
-
-                    transform.position = Vector3.MoveTowards(transform.position, targetPosition, NormalMoveSpeed * Time.deltaTime);
-                    yield return null;
-                }
+                ResetChaseState();
+                MoveToRandomPosition();
             }
 
             yield return null;
         }
     }
 
+    private void ResetChaseState()
+    {
+        ChaseMoveSpeed = 1;
+        isFollowingPlayer = false;
+        isChasing = false;
+    }
+
+    private IEnumerator MoveToRandomPosition()
+    {
+        Vector3 targetPosition = new Vector3(
+            Random.Range(moveBoundsMin.position.x, moveBoundsMax.position.x),
+            0f,
+            Random.Range(moveBoundsMin.position.z, moveBoundsMax.position.z)
+        );
+
+        while (Vector3.Distance(transform.position, targetPosition) > 0.1f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, NormalMoveSpeed * Time.deltaTime);
+            yield return null;
+        }
+    }
+
     private IEnumerator IncreaseChaseSpeedOverTime()
     {
-        while (isChasing) // Only increase speed when chasing
+        while (isChasing)
         {
             yield return new WaitForSeconds(1.5f);
-            ChaseMoveSpeed += 1f; // Increase ChaseMoveSpeed by 1
+            ChaseMoveSpeed += 1f;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject == GameManager.instance.player.gameObject)
+        {
+            stayCoroutine = StartCoroutine(CheckPlayerStay());
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject == GameManager.instance.player.gameObject && stayCoroutine != null)
+        {
+            StopCoroutine(stayCoroutine);
+        }
+    }
+
+    private IEnumerator CheckPlayerStay()
+    {
+        yield return new WaitForSeconds(5f);
+        movePlayerUpCoroutine = StartCoroutine(MovePlayerUp());
+    }
+
+    private IEnumerator MovePlayerUp()
+    {
+        isMovingPlayerUp = true;
+        float originalGravity = GameManager.instance.player.gravity;
+        GameManager.instance.player.gravity = 0;
+
+        if (playerScript != null)
+        {
+            playerScript.enabled = false;
+        }
+
+        while (playerTransform.position.y < 15)
+        {
+            Vector3 moveDirection = Vector3.up * VerticalMoveSpeed;
+            playerController.Move(moveDirection * Time.deltaTime);
+            yield return null;
+        }
+
+        isMovingPlayerUp = false;
+
+        if (playerScript != null)
+        {
+            playerScript.enabled = true;
+        }
+
+        GameManager.instance.player.gravity = originalGravity;
     }
 }
