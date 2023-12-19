@@ -12,6 +12,16 @@ public class Enemy : MonoBehaviour
     [Space]
     public float destroyBoardsDistance = 5.0f;
 
+    [Header("Kill Effects")]
+    public Animator animator;
+    public GameObject headPopEnable;
+    string currentAnimState;
+
+    [Header("Animation Jank")]
+    public List<float> meleeTimes;
+    public List<float> damageTimes;
+
+    bool dead = false;
     NavMeshAgent agent;
 
     enum ActingState
@@ -35,19 +45,20 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.instance.gameStopped) return;
+        if (GameManager.instance.gameStopped || dead) return;
 
         switch (actingState) {
             case ActingState.WALKING:
                 GetPathToTarget();
+                SetAnimationState("Walk", 3);
                 break;
 
             case ActingState.DESTROYINGWALL:
-
+                SetAnimationState("Telekinesis", 1);
                 break;
 
             case ActingState.ATTACKING:
-
+                SetAnimationState("Melee", 3);
                 break;
         }
 
@@ -76,8 +87,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    int SetAnimationState(string animation, int maxVal, bool retIfAlreadyPlaying = true)
+    {
+        if (retIfAlreadyPlaying && currentAnimState == animation) return -1;
+
+        if (currentAnimState != null && currentAnimState != "") {
+            animator.SetFloat(currentAnimState, 0);
+        }
+
+        int selectedVal;
+
+        if (maxVal > 1) {
+            selectedVal = Random.Range(1, maxVal + 1);
+        } else {
+            selectedVal = 1;
+        }
+
+        animator.SetFloat(animation, selectedVal);
+        currentAnimState = animation;
+
+        return selectedVal;
+    }
+
     public void TakeDamage(float damage, BodyPart.PartType part)
     {
+        //TODO: Hit anim
+
         switch (part) {
             case BodyPart.PartType.HEAD:
                 health -= health * 2;
@@ -93,15 +128,28 @@ public class Enemy : MonoBehaviour
         }
 
         if (health <= 0) {
-            Death();
+            Death(part);
         }
     }
 
-    void Death()
+    void Death(BodyPart.PartType part)
     {
         GameManager.instance.AddScore(GameManager.instance.scoreOnKill);
 
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        switch (part) {
+            case BodyPart.PartType.HEAD:
+                headPopEnable.SetActive(true);
+                break;
+            case BodyPart.PartType.BODY:
+            default:
+                break;
+        }
+
+        SetAnimationState("Death", 3);
+
+        dead = true;
+        agent.isStopped = true;
     }
 
     public void DealDamage(Player player)
@@ -116,19 +164,32 @@ public class Enemy : MonoBehaviour
         actingState = ActingState.ATTACKING;
         if (!agent.isStopped) agent.isStopped = true;
 
+        int meleeIndex = SetAnimationState("Melee", 3, false) - 1;
+
         // do something animation based
 
-        float timer = 1.0f;
+        bool hit = false;
+        float timer = meleeTimes[meleeIndex];
         while ((timer -= Time.deltaTime) > 0) {
-            yield return new WaitForEndOfFrame();
-        }
+            if (GameManager.instance.gameStopped) yield return new WaitForEndOfFrame();
 
-        if ((GameManager.instance.player.transform.position - transform.position).sqrMagnitude < agent.stoppingDistance * agent.stoppingDistance) {
-            DealDamage(GameManager.instance.player);
+            if (!hit) {
+                if (timer <= meleeTimes[meleeIndex] - damageTimes[meleeIndex]) {
+                    hit = true;
+
+                    if ((GameManager.instance.player.transform.position - transform.position).sqrMagnitude < agent.stoppingDistance * agent.stoppingDistance) {
+                        DealDamage(GameManager.instance.player);
+                    }
+                }
+            }
+
+            yield return new WaitForEndOfFrame();
         }
 
         agent.isStopped = false;
         actingState = ActingState.WALKING;
+
+        SetAnimationState("Walk", 3, false);
 
         yield break;
     }
@@ -139,6 +200,8 @@ public class Enemy : MonoBehaviour
 
         actingState = ActingState.DESTROYINGWALL;
         if (!agent.isStopped) agent.isStopped = true;
+
+        SetAnimationState("Telekinesis", 1, false);
 
         // do something animation based
 
@@ -151,6 +214,8 @@ public class Enemy : MonoBehaviour
 
         agent.isStopped = false;
         actingState = ActingState.WALKING;
+
+        SetAnimationState("Walk", 3, false);
 
         yield break;
     }

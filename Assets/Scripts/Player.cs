@@ -120,6 +120,8 @@ public class Player : MonoBehaviour
     {
         health = maxHealth;
         stamina = maxStamina;
+        currentAmmoClip = maxAmmoClip;
+        currentAmmoHeld = maxAmmoHeld;
 
         characterController.enabled = false;
         transform.position = spawnPos;
