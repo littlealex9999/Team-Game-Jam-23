@@ -17,9 +17,13 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public Image healthUI;
+    public TextMeshProUGUI healthText;
     public Image ammoUI;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI ammoHeldText;
+    public Image timerImage;
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI scoreText;
     public Image hurtSplatter;
     public AnimationCurve hurtSplatterCurve;
 
@@ -27,6 +31,8 @@ public class GameManager : MonoBehaviour
     public float gameOverFadeDuration = 3.0f;
     public Image fadeToDeathScreen;
     public GameObject gameOverScreen;
+    public GameObject mainMenu;
+    public GameObject pauseMenu;
 
     [Header("Spawning")]
     public Enemy enemyPrefab;
@@ -52,9 +58,17 @@ public class GameManager : MonoBehaviour
     List<Enemy> enemies = new List<Enemy>();
 
     float elapsedGameTime = 0;
-    bool gameOver = false;
-    bool gamePaused = false;
+    public bool gameOver { get; private set; } = true;
+    public bool gamePaused { get; private set; } = false;
     public bool gameStopped { get { return gameOver || gamePaused; } }
+
+    enum MenuState
+    {
+        MAIN,
+        PAUSE,
+        DEATH,
+        GAME,
+    }
 
     void Awake()
     {
@@ -66,6 +80,8 @@ public class GameManager : MonoBehaviour
         enemySpawnCountPerMinuteBase = enemySpawnCountPerMinute;
         enemySpawnCountRangePerMinuteBase = enemySpawnCountRangePerMinute;
         enemySpawnTimer = enemySpawnIntervalMax;
+
+        ChangeMenuState(MenuState.MAIN);
     }
 
     void Update()
@@ -82,8 +98,9 @@ public class GameManager : MonoBehaviour
     {
         if (player != null) {
             if (healthUI) healthUI.fillAmount = player.health / player.maxHealth;
-            if (ammoUI) ammoUI.fillAmount = player.currentAmmoClip / player.maxAmmoClip;
-            if (ammoText) ammoText.text = player.currentAmmoClip + " / " + player.maxAmmoClip;
+            if (healthText) healthText.text = player.health.ToString("0");
+            if (ammoUI) ammoUI.fillAmount = (float)player.currentAmmoClip / (float)player.maxAmmoClip;
+            if (ammoText) ammoText.text = player.currentAmmoClip.ToString();
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
 
             if (hurtSplatter) {
@@ -110,6 +127,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void ChangeMenuState(MenuState state)
+    {
+        fadeToDeathScreen.gameObject.SetActive(false);
+        gameOverScreen.SetActive(false);
+
+        mainMenu.SetActive(false);
+        pauseMenu.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        switch (state) {
+            case MenuState.MAIN:
+                mainMenu.SetActive(true);
+                break;
+            case MenuState.PAUSE:
+                pauseMenu.SetActive(true);
+                break;
+            case MenuState.DEATH:
+                Color c = fadeToDeathScreen.color;
+                c.a = 1.0f;
+                fadeToDeathScreen.color = c;
+
+                fadeToDeathScreen.gameObject.SetActive(true);
+                gameOverScreen.SetActive(true);
+                break;
+            case MenuState.GAME:
+            default:
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                break;
+        }
+    }
+
     public void RestartGame()
     {
         elapsedGameTime = 0;
@@ -121,13 +172,16 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < enemies.Count; i++) {
             if (enemies[i] != null) {
-                Destroy(enemies[i]);
+                Destroy(enemies[i].gameObject);
             }
         }
 
         enemies.Clear();
 
-        gameOverScreen.SetActive(false);
+        ChangeMenuState(MenuState.GAME);
+
+        player.Restart();
+        gameOver = false;
     }
 
     public void GameOver()
@@ -135,6 +189,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("Game Over");
 #endif
+        if (gameOver) return;
 
         gameOver = true;
         StartCoroutine(GameOverFade(gameOverFadeDuration));
@@ -165,7 +220,7 @@ public class GameManager : MonoBehaviour
         spawnPos.y = enemySpawnFocus.position.y;
         spawnPos.z = enemySpawnFocus.position.z + spawnDir.y;
 
-        Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        enemies.Add(Instantiate(enemyPrefab, spawnPos, Quaternion.identity));
     }
 
     IEnumerator GameOverFade(float duration)
@@ -175,15 +230,14 @@ public class GameManager : MonoBehaviour
         float timer = 0;
         while ((timer += Time.deltaTime) < duration) {
             float completion = timer / duration;
-            Color c = fadeToDeathScreen.color;
-            c.a = completion;
+            Color col = fadeToDeathScreen.color;
+            col.a = completion;
 
-            fadeToDeathScreen.color = c;
+            fadeToDeathScreen.color = col;
             yield return new WaitForEndOfFrame();
         }
 
-        gameOverScreen.SetActive(true);
-        fadeToDeathScreen.gameObject.SetActive(false);
+        ChangeMenuState(MenuState.DEATH);
 
         yield break;
     }

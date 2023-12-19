@@ -75,17 +75,20 @@ public class Player : MonoBehaviour
     float interactionTimer;
     public int score;
 
+    Vector3 spawnPos;
+    Quaternion spawnRot;
+
     #region Unity
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
         characterController = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
 
         health = maxHealth;
         stamina = maxStamina;
+
+        spawnPos = transform.position;
+        spawnRot = transform.rotation;
     }
 
     void Update()
@@ -111,6 +114,19 @@ public class Player : MonoBehaviour
         if (other.tag == "Indoors") {
             indoorsTriggersEntered--;
         }
+    }
+
+    public void Restart()
+    {
+        health = maxHealth;
+        stamina = maxStamina;
+        currentAmmoClip = maxAmmoClip;
+        currentAmmoHeld = maxAmmoHeld;
+
+        characterController.enabled = false;
+        transform.position = spawnPos;
+        transform.rotation = spawnRot;
+        characterController.enabled = true;
     }
     #endregion
 
@@ -140,6 +156,7 @@ public class Player : MonoBehaviour
         grounded = false;
         Collider[] nearGroundColliders = Physics.OverlapSphere(transform.position - transform.up * (characterController.height / 2 + groundedCheckBuffer), characterController.radius);
         for (int i = 0; i < nearGroundColliders.Length; i++) {
+            if (nearGroundColliders[i].gameObject.layer == LayerMask.NameToLayer("Gun")) continue;
             if (nearGroundColliders[i] != characterController && !nearGroundColliders[i].isTrigger) {
                 grounded = true;
             }
