@@ -95,6 +95,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
+    - _Alpha_Height: -1
     - _Blend: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -103,6 +104,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _Dissolve_Emission_Thickness: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _Fresnel_Height: 0.5
@@ -111,6 +113,8 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _Noise_Scale: 78.01
+    - _Noise_Strength: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
