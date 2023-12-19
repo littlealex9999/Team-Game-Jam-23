@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
 
         Vector3 difference = transform.position - startPos;
 
-        if (Physics.SphereCast(startPos, radius, difference, out RaycastHit hit, difference.magnitude)) {
+        if (Physics.SphereCast(startPos, radius, difference, out RaycastHit hit, difference.magnitude, 0xFFFFFF, QueryTriggerInteraction.Ignore)) {
             BodyPart part = hit.transform.GetComponent<BodyPart>();
             if (part != null) {
                 part.enemy.TakeDamage(damage, part.part);
