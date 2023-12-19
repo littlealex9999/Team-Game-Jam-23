@@ -120,6 +120,8 @@ public class Player : MonoBehaviour
     {
         health = maxHealth;
         stamina = maxStamina;
+        currentAmmoClip = maxAmmoClip;
+        currentAmmoHeld = maxAmmoHeld;
 
         characterController.enabled = false;
         transform.position = spawnPos;
@@ -346,8 +348,8 @@ public class Player : MonoBehaviour
                 interactingWith = null;
             }
         } else {
-            // layermask 6 is the "Interactable" layer
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 1 << 6)) {
+            // layermask 6 is the "Interactable" layer, layermask 7 is the "Boards" layer
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionRange, 1 << 6 | 1 << 7, QueryTriggerInteraction.Collide)) {
                 if (Input.GetButtonDown("Interact")) {
                     interactingWith = hit.transform.GetComponent<Interactable>();
                     if (interactingWith != null && interactingWith.CanInteract(this)) {
