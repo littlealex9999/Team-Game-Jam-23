@@ -178,6 +178,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Alien
       objectReference: {fileID: 0}
+    - target: {fileID: 6383908282618590802, guid: c6278b73ea8857e438ee1af5c11afa78, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383908282618590802, guid: c6278b73ea8857e438ee1af5c11afa78, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383908282618590802, guid: c6278b73ea8857e438ee1af5c11afa78, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6278b73ea8857e438ee1af5c11afa78, type: 3}
 --- !u!1 &45718997 stripped
