@@ -686,6 +686,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4097224190035405896, guid: c2b4cefd8678bd645b643dc52afc4c85, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4097224190035405896, guid: c2b4cefd8678bd645b643dc52afc4c85, type: 3}
+      propertyPath: lengthInSec
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4097224190035405896, guid: c2b4cefd8678bd645b643dc52afc4c85, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4794081952630272451, guid: c2b4cefd8678bd645b643dc52afc4c85, type: 3}
       propertyPath: m_Name
       value: Blood
