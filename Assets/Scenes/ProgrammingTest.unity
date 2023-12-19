@@ -11653,6 +11653,7 @@ GameObject:
   - component: {fileID: 1213415327}
   - component: {fileID: 1213415326}
   - component: {fileID: 1213415325}
+  - component: {fileID: 1213415328}
   m_Layer: 7
   m_Name: BoardDoor
   m_TagString: Untagged
@@ -11710,6 +11711,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1213415328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213415324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 989227573489e3a4d8c080b94966d9ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  restorationType: 2
+  cost: 0
+  amountToRestore: 0
+  timeToInteract: 1
+  board: {fileID: 1213415326}
 --- !u!4 &1216628230 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3915250834883145266, guid: 4d6b8b793bb32ac4b8a1a01c1401ea52, type: 3}

@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
     [Header("Animation Jank")]
     public List<float> meleeTimes;
     public List<float> damageTimes;
+    public float destroyTime = 10.0f;
 
     bool dead = false;
     NavMeshAgent agent;
@@ -152,6 +153,8 @@ public class Enemy : MonoBehaviour
 
         dead = true;
         agent.isStopped = true;
+
+        StartCoroutine(KillAfterSeconds(destroyTime));
     }
 
     public void DealDamage(Player player)
@@ -220,5 +223,14 @@ public class Enemy : MonoBehaviour
         SetAnimationState("Walk", 3, false);
 
         yield break;
+    }
+
+    IEnumerator KillAfterSeconds(float duration)
+    {
+        while ((duration -= Time.deltaTime) > 0) {
+            yield return new WaitForEndOfFrame();
+        }
+
+        Destroy(gameObject);
     }
 }
