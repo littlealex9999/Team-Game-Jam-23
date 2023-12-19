@@ -54,10 +54,10 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 329877d7405b7cd4abb28528fd12186d, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 147fe6a7a6fbe8d4ca9a02db207158e7, type: 2}
+      objectReference: {fileID: 2100000, guid: 0ca243a5c3e01a947a851e4f2d35f3a4, type: 2}
     - target: {fileID: 919132149155446097, guid: 329877d7405b7cd4abb28528fd12186d, type: 3}
       propertyPath: m_Name
-      value: Barrel
+      value: Barrel Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 329877d7405b7cd4abb28528fd12186d, type: 3}
