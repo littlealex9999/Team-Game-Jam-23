@@ -11,6 +11,8 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.gameStopped) return;
+
         if (lifetime <= 0) Destroy(gameObject);
         lifetime -= Time.deltaTime;
 
@@ -21,9 +23,9 @@ public class Bullet : MonoBehaviour
         Vector3 difference = transform.position - startPos;
 
         if (Physics.SphereCast(startPos, radius, difference, out RaycastHit hit, difference.magnitude)) {
-            Enemy e = hit.transform.GetComponent<Enemy>();
-            if (e != null) {
-                e.TakeDamage(damage);
+            BodyPart part = hit.transform.GetComponent<BodyPart>();
+            if (part != null) {
+                part.enemy.TakeDamage(damage, part.part);
             }
 
             // bullet destroys regardless of hitting an enemy or not
