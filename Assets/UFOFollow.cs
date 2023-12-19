@@ -9,7 +9,7 @@ public class UFOFollow : MonoBehaviour
     public float timeToSuckPlayer = 5.0f;
     public Transform moveBoundsMin;
     public Transform moveBoundsMax;
-
+    public AudioSource audioSource;
     private Transform playerTransform;
     private CharacterController playerController;
     private Player playerScript;
@@ -19,6 +19,10 @@ public class UFOFollow : MonoBehaviour
     private Coroutine movePlayerUpCoroutine;
     private Coroutine stayCoroutine;
     private Coroutine randomPosCoroutine;
+
+    [Header("Audio Clips")]
+    public AudioClip UFOSound;
+    
 
     private bool playerInside = false;
     [HideInInspector] public float suckTime = 0.0f;
@@ -151,7 +155,7 @@ public class UFOFollow : MonoBehaviour
         isMovingPlayerUp = true;
         float originalGravity = GameManager.instance.player.gravity;
         GameManager.instance.player.gravity = 0;
-
+        audioSource.PlayOneShot(UFOSound);
         if (playerScript != null) {
             playerScript.enabled = false;
         }
