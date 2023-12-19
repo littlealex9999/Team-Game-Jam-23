@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 
 public class UI_Script : MonoBehaviour
@@ -11,9 +12,16 @@ public class UI_Script : MonoBehaviour
     public Image healthBar;
     public Image ammoBar;
     public Image timeBar;
+    public TMP_Text healthValueText;
+    public TMP_Text ammoValueText;
+    public TMP_Text timeValueText;
     public float tempHealthValue = 1;
     public float tempAmmoValue = 1;
     public float tempTimeValue = 1;
+
+
+    public TMP_Text scoreValue;
+    public float score = 100;
 
 
     // Start is called before the first frame update
@@ -33,6 +41,12 @@ public class UI_Script : MonoBehaviour
         ammoBar.fillAmount = tempAmmoValue;
         tempTimeValue -= 1f / 30.0f * Time.deltaTime;
         timeBar.fillAmount = tempTimeValue;
+
+        healthValueText.text = tempHealthValue.ToString();
+        ammoValueText.text = tempAmmoValue.ToString();
+        timeValueText.text = tempTimeValue.ToString();
+
+        scoreValue.text = score.ToString();
     }
 
     public void StartGame()
@@ -49,4 +63,5 @@ public class UI_Script : MonoBehaviour
     {
         //timescale stuff probably idk how youre doing the pause stuff and im not gonna fuck around with it 
     }
+
 }
