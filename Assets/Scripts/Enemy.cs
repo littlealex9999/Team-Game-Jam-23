@@ -12,6 +12,9 @@ public class Enemy : MonoBehaviour
     [Space]
     public float destroyBoardsDistance = 5.0f;
 
+    [Header("Kill Effects")]
+    public GameObject headPopEnable;
+
     NavMeshAgent agent;
 
     enum ActingState
