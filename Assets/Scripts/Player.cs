@@ -26,6 +26,10 @@ public class Player : MonoBehaviour
     Vector3 cameraVelocity;
     Vector2 angleLook;
     Vector3 velocity;
+    
+    public GameObject UI;
+    Sway sway;
+    bool adsSwayTimer;
 
     int indoorsTriggersEntered = 0;
 
@@ -85,6 +89,7 @@ public class Player : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
+        sway = GetComponentInChildren<Sway>();
 
         health = maxHealth;
         stamina = maxStamina;
@@ -102,6 +107,11 @@ public class Player : MonoBehaviour
         DoShoot();
         CheckInteractions();
         RegenStamina();
+
+        if (adsSwayTimer)
+        {
+            Invoke("ADSSway", 0.5f);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -213,11 +223,21 @@ public class Player : MonoBehaviour
             if (!aimDownSights) {
                 aimDownSights = true;
                 anim.SetBool("aimDownSights", true);
+                UI.SetActive(false);
+                adsSwayTimer = false;
+                sway.amount = sway.amount / 3;
+                sway.maxAmount = sway.maxAmount / 3;
+                sway.smoothAmount = sway.smoothAmount / 3;
+                sway.rotationAmount = sway.rotationAmount / 3;
+                sway.maxRotationAmount = sway.maxRotationAmount / 3;
+                sway.smoothRotation = sway.smoothRotation / 3;
             }
         } else {
             if (aimDownSights) {
                 aimDownSights = false;
                 anim.SetBool("aimDownSights", false);
+                UI.SetActive(true);
+                adsSwayTimer = true;
             }
         }
 
@@ -268,6 +288,16 @@ public class Player : MonoBehaviour
                 StartCoroutine(Reload(reloadDuration));
             }
         }
+    }
+
+    private void ADSSway()
+    {
+        sway.amount = sway.amount * 3;
+        sway.maxAmount = sway.maxAmount * 3;
+        sway.smoothAmount = sway.smoothAmount * 3;
+        sway.rotationAmount = sway.rotationAmount * 3;
+        sway.maxRotationAmount = sway.maxRotationAmount * 3;
+        sway.smoothRotation = sway.smoothRotation * 3;
     }
 
     public void RestoreAmmo(int amount)
