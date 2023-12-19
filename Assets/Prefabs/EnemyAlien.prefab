@@ -52,7 +52,7 @@ MonoBehaviour:
   damage: 10
   audioSource: {fileID: -4511923079996466537}
   destroyBoardsDistance: 5
-  destroyBoardsTime: 5
+  destroyBoardsTime: 3
   animator: {fileID: 9208643149841171193}
   headPopEnable:
   - {fileID: 2407191024926025603}
