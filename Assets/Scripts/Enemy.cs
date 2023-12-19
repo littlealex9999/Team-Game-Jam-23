@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Kill Effects")]
     public Animator animator;
-    public GameObject headPopEnable;
+    public List<GameObject> headPopEnable;
     string currentAnimState;
 
     [Header("Animation Jank")]
@@ -139,7 +139,9 @@ public class Enemy : MonoBehaviour
         //Destroy(gameObject);
         switch (part) {
             case BodyPart.PartType.HEAD:
-                headPopEnable.SetActive(true);
+                for (int i = 0; i < headPopEnable.Count; i++) {
+                    headPopEnable[i].SetActive(true);
+                }
                 break;
             case BodyPart.PartType.BODY:
             default:
