@@ -76,10 +76,21 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, BodyPart.PartType part)
     {
-        health -= damage;
-        GameManager.instance.AddScore(GameManager.instance.scoreOnBullet);
+        switch (part) {
+            case BodyPart.PartType.HEAD:
+                health -= health * 2;
+                GameManager.instance.AddScore(GameManager.instance.scoreOnHeadshot);
+                Debug.Log("Headshot");
+                break;
+            case BodyPart.PartType.BODY:
+            default:
+                health -= damage;
+                GameManager.instance.AddScore(GameManager.instance.scoreOnBullet);
+                Debug.Log("Body shot");
+                break;
+        }
 
         if (health <= 0) {
             Death();
