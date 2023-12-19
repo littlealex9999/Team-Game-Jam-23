@@ -6,9 +6,10 @@ public class UFOFollow : MonoBehaviour
     public float NormalMoveSpeed = 2f;
     public float ChaseMoveSpeed = 1f;
     public float VerticalMoveSpeed = 0.5f;
+    public float timeToSuckPlayer = 5.0f;
     public Transform moveBoundsMin;
     public Transform moveBoundsMax;
-
+    public AudioSource audioSource;
     private Transform playerTransform;
     private CharacterController playerController;
     private Player playerScript;
@@ -18,6 +19,13 @@ public class UFOFollow : MonoBehaviour
     private Coroutine movePlayerUpCoroutine;
     private Coroutine stayCoroutine;
     private Coroutine randomPosCoroutine;
+
+    [Header("Audio Clips")]
+    public AudioClip UFOSound;
+    
+
+    private bool playerInside = false;
+    [HideInInspector] public float suckTime = 0.0f;
 
     private void Start()
     {
@@ -29,17 +37,14 @@ public class UFOFollow : MonoBehaviour
 
     private void Update()
     {
-        if (playerTransform.position.y >= 15 && isMovingPlayerUp)
-        {
+        if (playerTransform.position.y >= 15 && isMovingPlayerUp) {
             isMovingPlayerUp = false;
 
-            if (movePlayerUpCoroutine != null)
-            {
+            if (movePlayerUpCoroutine != null) {
                 StopCoroutine(movePlayerUpCoroutine);
             }
 
-            if (playerScript != null)
-            {
+            if (playerScript != null) {
                 playerScript.enabled = true;
                 GameManager.instance.player.TakeDamage(200);
             }
@@ -51,16 +56,11 @@ public class UFOFollow : MonoBehaviour
 
     private IEnumerator RandomMove()
     {
-        while (true)
-        {
-            if (isMovingPlayerUp)
-            {
+        while (true) {
+            if (isMovingPlayerUp) {
                 yield return null;
-            }
-            else if (!GameManager.instance.player.isIndoors)
-            {
-                if (!isFollowingPlayer)
-                {
+            } else if (!GameManager.instance.player.isIndoors) {
+                if (!isFollowingPlayer) {
                     isFollowingPlayer = true;
                     isChasing = true;
                     StartCoroutine(IncreaseChaseSpeedOverTime());
@@ -68,9 +68,7 @@ public class UFOFollow : MonoBehaviour
 
                 Vector3 targetPosition = playerTransform.position;
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, ChaseMoveSpeed * Time.deltaTime);
-            }
-            else
-            {
+            } else {
                 ResetChaseState();
 
                 if (randomPosCoroutine == null) {
@@ -97,8 +95,7 @@ public class UFOFollow : MonoBehaviour
             Random.Range(moveBoundsMin.position.z, moveBoundsMax.position.z)
         );
 
-        while (Vector3.Distance(transform.position, targetPosition) > 0.1f)
-        {
+        while (Vector3.Distance(transform.position, targetPosition) > 0.1f) {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, NormalMoveSpeed * Time.deltaTime);
             yield return null;
         }
@@ -108,8 +105,7 @@ public class UFOFollow : MonoBehaviour
 
     private IEnumerator IncreaseChaseSpeedOverTime()
     {
-        while (isChasing)
-        {
+        while (isChasing) {
             yield return new WaitForSeconds(1.5f);
             ChaseMoveSpeed += 1f;
         }
@@ -117,24 +113,41 @@ public class UFOFollow : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == GameManager.instance.player.gameObject)
-        {
+        if (other.gameObject == GameManager.instance.player.gameObject) {
+            playerInside = true;
             stayCoroutine = StartCoroutine(CheckPlayerStay());
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == GameManager.instance.player.gameObject && stayCoroutine != null)
-        {
-            StopCoroutine(stayCoroutine);
+        if (other.gameObject == GameManager.instance.player.gameObject && stayCoroutine != null) {
+            playerInside = false;
+            //StopCoroutine(stayCoroutine);
         }
     }
 
     private IEnumerator CheckPlayerStay()
     {
-        yield return new WaitForSeconds(5f);
-        movePlayerUpCoroutine = StartCoroutine(MovePlayerUp());
+        suckTime = 0;
+        while (suckTime < timeToSuckPlayer && suckTime > -1.0f) {
+            if (playerInside) {
+                if (suckTime < 0) suckTime = 0;
+                suckTime += Time.deltaTime;
+            } else {
+                suckTime -= Time.deltaTime;
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        stayCoroutine = null;
+        if (suckTime > 0) {
+            movePlayerUpCoroutine = StartCoroutine(MovePlayerUp());
+        }
+        suckTime = 0;
+
+        yield break;
     }
 
     private IEnumerator MovePlayerUp()
@@ -142,14 +155,12 @@ public class UFOFollow : MonoBehaviour
         isMovingPlayerUp = true;
         float originalGravity = GameManager.instance.player.gravity;
         GameManager.instance.player.gravity = 0;
-
-        if (playerScript != null)
-        {
+        audioSource.PlayOneShot(UFOSound);
+        if (playerScript != null) {
             playerScript.enabled = false;
         }
 
-        while (playerTransform.position.y < 15)
-        {
+        while (playerTransform.position.y < 15) {
             Vector3 moveDirection = Vector3.up * VerticalMoveSpeed;
             playerController.Move(moveDirection * Time.deltaTime);
             yield return null;
@@ -157,8 +168,7 @@ public class UFOFollow : MonoBehaviour
 
         isMovingPlayerUp = false;
 
-        if (playerScript != null)
-        {
+        if (playerScript != null) {
             playerScript.enabled = true;
         }
 

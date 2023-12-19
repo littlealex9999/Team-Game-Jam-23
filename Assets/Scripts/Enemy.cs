@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
 {
     public float health = 100;
     public float damage = 10;
-
+    public AudioSource audioSource;
     [Header("Board Destruction")]
     public float destroyBoardsDistance = 5.0f;
     public float destroyBoardsTime = 5.0f;
@@ -25,8 +25,17 @@ public class Enemy : MonoBehaviour
     public List<float> hurtTimes;
     public float destroyTime = 10.0f;
 
+    [Header("Audio Clips")]
+    public AudioClip HeadSplatterSound;
+    public AudioClip BloodsplatSound;
+    public AudioClip PsycSounds;
+    public AudioClip BoardRemovedSound;
+
     bool dead = false;
     NavMeshAgent agent;
+
+    int indoorsTriggersEntered = 0;
+    public bool isIndoors { get { return indoorsTriggersEntered > 0; } }
 
     enum ActingState
     {
@@ -69,6 +78,20 @@ public class Enemy : MonoBehaviour
 
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered++;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Indoors") {
+            indoorsTriggersEntered--;
+        }
+    }
+
     void GetPathToTarget()
     {
         if (GameManager.instance.player != null) {
@@ -76,7 +99,7 @@ public class Enemy : MonoBehaviour
 
             if (agent.remainingDistance <= agent.stoppingDistance) {
                 StartCoroutine(Attack());
-            } else if (GameManager.instance.player.isIndoors) {
+            } else if (GameManager.instance.player.isIndoors && !isIndoors || !GameManager.instance.player.isIndoors && isIndoors) {
                 // layermask 7 is the "Boards" layer
                 Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, destroyBoardsDistance, 1 << 7);
 
@@ -119,6 +142,7 @@ public class Enemy : MonoBehaviour
         switch (part) {
             case BodyPart.PartType.HEAD:
                 health -= health * 2;
+                audioSource.PlayOneShot(HeadSplatterSound);
                 GameManager.instance.AddScore(GameManager.instance.scoreOnHeadshot);
                 break;
             case BodyPart.PartType.BODY:
@@ -156,7 +180,7 @@ public class Enemy : MonoBehaviour
         }
 
         SetAnimationState("Death", 3);
-
+        audioSource.PlayOneShot(BloodsplatSound);
         dead = true;
         agent.isStopped = true;
 
@@ -220,7 +244,7 @@ public class Enemy : MonoBehaviour
         }
 
         board.RemoveBoard();
-
+        audioSource.PlayOneShot(BoardRemovedSound);
         agent.isStopped = false;
         actingState = ActingState.WALKING;
 

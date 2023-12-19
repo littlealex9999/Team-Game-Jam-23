@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
     public bool grounded { get; private set; }
     public bool isIndoors { get { return indoorsTriggersEntered > 0; } }
 
+    public AudioSource audioSource;
+    public AudioClip ShootSound;
 
     [Header("Shooting")]
     public Bullet bulletPrefab;
@@ -245,8 +247,9 @@ public class Player : MonoBehaviour
                         Bullet b = Instantiate(bulletPrefab, bulletSpawn.position, spreadAngle);
                         b.speed = bulletSpeed;
                         b.damage = bulletDamage;
+                        audioSource.PlayOneShot(ShootSound);
                     }
-                    anim.SetTrigger("shooting");
+                    anim.SetTrigger("shooting");                  
                     currentAmmoClip--;
 
                     shootTimer = shootCooldown;
