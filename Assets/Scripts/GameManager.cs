@@ -58,8 +58,8 @@ public class GameManager : MonoBehaviour
     List<Enemy> enemies = new List<Enemy>();
 
     float elapsedGameTime = 0;
-    bool gameOver = true;
-    bool gamePaused = false;
+    public bool gameOver { get; private set; } = true;
+    public bool gamePaused { get; private set; } = false;
     public bool gameStopped { get { return gameOver || gamePaused; } }
 
     enum MenuState
@@ -98,8 +98,9 @@ public class GameManager : MonoBehaviour
     {
         if (player != null) {
             if (healthUI) healthUI.fillAmount = player.health / player.maxHealth;
-            if (ammoUI) ammoUI.fillAmount = player.currentAmmoClip / player.maxAmmoClip;
-            if (ammoText) ammoText.text = player.currentAmmoClip + " / " + player.maxAmmoClip;
+            if (healthText) healthText.text = player.health.ToString("0");
+            if (ammoUI) ammoUI.fillAmount = (float)player.currentAmmoClip / (float)player.maxAmmoClip;
+            if (ammoText) ammoText.text = player.currentAmmoClip.ToString();
             if (ammoHeldText) ammoHeldText.text = player.currentAmmoHeld.ToString();
 
             if (hurtSplatter) {
@@ -188,6 +189,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("Game Over");
 #endif
+        if (gameOver) return;
 
         gameOver = true;
         StartCoroutine(GameOverFade(gameOverFadeDuration));
